@@ -1,0 +1,29 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "com_spielplan",
+  "version": "CVS: 1.0.2",
+  "license": "GNU General Public License version 2 or later; see LICENSE.txt",
+  "assets": [
+    {
+      "name": "com_spielplan.admin",
+      "type": "style",
+      "uri": "com_spielplan/admin.css"
+    },
+    {
+      "name": "com_spielplan.admin",
+      "type": "script",
+      "uri": "com_spielplan/admin.js",
+      "dependencies": [
+        "jquery"
+      ],
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+        "name": "com_spielplan.list",
+        "type": "style",
+        "uri": "com_spielplan/list.css"
+    }
+  ]
+}
