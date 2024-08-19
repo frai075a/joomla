@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="4.0" method="upgrade">
+    <name>com_ferienverwaltung</name>
+    <creationDate>2024-08-19</creationDate>
+    <copyright>2024 Thorsten Austen</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Thorsten Austen</author>
+    <authorEmail>thorsten.austen@gmail.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>CVS: 1.0.0</version>
+    <description>Komponente zum Erfassen der Schulferien</description>
+    <namespace path="src">Ttc\Component\Ferienverwaltung</namespace>
+    
+    
+    
+    <install> <!-- Runs on install -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> <!-- Runs on update -->
+        <schemas>
+            <schemapath type="mysql">sql/updates</schemapath>
+        </schemas>
+    </update>
+    <uninstall> <!-- Runs on uninstall -->
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    
+
+    <files folder="site">
+        <folder>src</folder>
+        
+        <folder>tmpl</folder>
+    </files>
+    <media destination="com_ferienverwaltung" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
+    <languages folder="site/languages">
+        
+			<language tag="en-GB">en-GB/com_ferienverwaltung.ini</language>
+    </languages>
+    <administration>
+        <menu>COM_FERIENVERWALTUNG</menu>
+        <submenu>
+            
+			<menu link="option=com_ferienverwaltung&amp;view=ferienverwaltungsdialog" view="ferienverwaltungsdialog" alt="Ferienverwaltung/Ferienverwaltungsdialog">COM_FERIENVERWALTUNG_TITLE_FERIENVERWALTUNGSDIALOG</menu>
+
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>presets</folder>
+            <folder>sql</folder>
+        </files>
+        <languages folder="administrator/languages">
+            
+			<language tag="en-GB">en-GB/com_ferienverwaltung.ini</language>
+			<language tag="en-GB">en-GB/com_ferienverwaltung.sys.ini</language>
+        </languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+    </plugins>
+    
+
+    <updateservers>
+        <server type="extension" priority="1" name="com_ferienverwaltung">https://nocdn.component-creator.com/index.php?task=builder.preupdatecheckhook&amp;option=com_combuilder&amp;component=NzYwODktMjEyNTY3</server>
+    </updateservers>
+</extension>
+<!-- Component built by the Joomla Component Creator -->
+<!-- http://www.component-creator.com/ -->

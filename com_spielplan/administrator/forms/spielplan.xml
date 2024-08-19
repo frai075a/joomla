@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Ttc\Component\Spielplan\Administrator\Field">
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="hallennr" default="0" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_HALLENNR" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_HALLENNR" hidden="true" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_HALLENNR"/>
+    <field name="ort_key" default="NULL" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_ORT_KEY" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_ORT_KEY" hidden="true" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_ORT_KEY"/>
+    <field name="mannschaft" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_MANNSCHAFT" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_MANNSCHAFT" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_MANNSCHAFT"/>
+    <field name="datum" type="calendar" class="inputbox" filter="safehtml" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_DATUM" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_DATUM" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_DATUM"/>
+    <field name="uhrzeit" default="00:00:00" type="text" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_UHRZEIT" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_UHRZEIT" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_UHRZEIT"/>
+    <field name="heimmannschaft" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_HEIMMANNSCHAFT" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_HEIMMANNSCHAFT" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_HEIMMANNSCHAFT"/>
+    <field name="h_nummer" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_H_NUMMER" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_H_NUMMER" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_H_NUMMER"/>
+    <field name="auswaertsmannschaft" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_AUSWAERTSMANNSCHAFT" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_AUSWAERTSMANNSCHAFT" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_AUSWAERTSMANNSCHAFT"/>
+    <field name="a_nummer" required="true" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_A_NUMMER" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_A_NUMMER" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_A_NUMMER"/>
+    <field name="ort" label="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_ORT" description="COM_SPIELPLAN_FORM_DESC_SPIELPLAN_ORT" hint="COM_SPIELPLAN_FORM_LBL_SPIELPLAN_ORT"/>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>
