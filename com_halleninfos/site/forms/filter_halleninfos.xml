@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="filter">
+        <field name="search" type="text" hint="COM_HALLENINFOS_SEARCH_FILTER_SUBMIT"
+               label="COM_USERS_FILTER_SEARCH_DESC"
+               class="js-stools-search-string" />
+
+        
+
+    </fields>
+    <fields name="list">
+
+        <field name="fullordering"
+               type="list"
+               label="COM_HALLENINFOS_LIST_FULL_ORDERING"
+               description="COM_HALLENINFOS_LIST_FULL_ORDERING_DESC"
+               onchange="this.form.submit();"
+               default="a.id DESC"
+        >
+            <option value="">JGLOBAL_SORT_BY</option>
+            <option value="a.id ASC">COM_HALLENINFOS_ID_ASC</option><option value="a.id DESC">COM_HALLENINFOS_ID_DESC</option><option value="a.ordering ASC">COM_HALLENINFOS_ORDERING_ASC</option><option value="a.ordering DESC">COM_HALLENINFOS_ORDERING_DESC</option><option value="a.datum ASC">COM_HALLENINFOS_DATUM_ASC</option><option value="a.datum DESC">COM_HALLENINFOS_DATUM_DESC</option><option value="a.information ASC">COM_HALLENINFOS_INFORMATION_ASC</option><option value="a.information DESC">COM_HALLENINFOS_INFORMATION_DESC</option>
+
+        </field>
+
+       <field name="limit"
+               type="limitbox"
+               label="COM_HALLENINFOS_LIST_LIMIT"
+               description="COM_HALLENINFOS_LIST_LIMIT_DESC"
+               class="input-mini"
+               default="25"
+               onchange="this.form.submit();"
+        />
+
+    </fields>
+</form>
