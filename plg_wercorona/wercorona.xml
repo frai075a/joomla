@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<extension type="plugin" group="content" version="5.0" method = "upgrade"> 
+  <name>Trainingsorga Corona</name> 
+  <author>Thorsten Austen</author> 
+  <creationDate>May 2020</creationDate> 
+  <copyright>(C) 2009 Thorsten Austen</copyright> 
+  <license>http://www.gnu.org/copyleft/gpl.html</license> 
+  <version>2.10.0</version> 
+  <description>Trainingsorga in Coronazeiten</description> 
+  <files> 
+    <filename plugin="wercorona">wercorona.php</filename> 
+  </files>
+</extension>
