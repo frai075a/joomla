@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -18,7 +18,7 @@ use Joomla\CMS\Form\Field\ListField;
 /**
  * Supports an HTML select list of categories
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 class NestedparentField extends ListField
 {
@@ -26,7 +26,7 @@ class NestedparentField extends ListField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.0.2
+	 * @since  1.0.3
 	 */
 	protected $type = 'nestedparent';
 
@@ -35,7 +35,7 @@ class NestedparentField extends ListField
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	protected function getOptions()
 	{

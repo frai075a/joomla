@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -23,7 +23,7 @@ use Ttc\Component\Spielplan\Administrator\Helper\SpielplanHelper;
 /**
  * Methods supporting a list of Spielplans records.
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 class SpielplansModel extends ListModel
 {
@@ -108,7 +108,7 @@ class SpielplansModel extends ListModel
 	 *
 	 * @return  string A store id.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -126,7 +126,7 @@ class SpielplansModel extends ListModel
 	 *
 	 * @return  DatabaseQuery
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	protected function getListQuery()
 	{

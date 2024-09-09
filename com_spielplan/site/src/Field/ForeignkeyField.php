@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -20,7 +20,7 @@ use \Joomla\CMS\Form\Field\ListField;
 /**
  * Supports a value from an external table
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 class ForeignKeyField extends ListField
 {
@@ -28,7 +28,7 @@ class ForeignKeyField extends ListField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.0.2
+	 * @since  1.0.3
 	 */
 	protected $type = 'foreignkey';
 
@@ -38,7 +38,7 @@ class ForeignKeyField extends ListField
 	 * The translate.
 	 *
 	 * @var    boolean
-	 * @since  1.0.2
+	 * @since  1.0.3
 	 */
 	protected $translate = true;
 
@@ -63,7 +63,7 @@ class ForeignKeyField extends ListField
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	protected function processQuery()
 	{
@@ -191,7 +191,7 @@ class ForeignKeyField extends ListField
 	 *
 	 * @return  string  The field input.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	protected function getInput()
 	{
@@ -229,7 +229,7 @@ class ForeignKeyField extends ListField
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	protected function getOptions()
 	{

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -23,7 +23,7 @@ use Joomla\Utilities\ArrayHelper;
 /**
  * Spielplans list controller class.
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 class SpielplansController extends AdminController
 {
@@ -71,7 +71,7 @@ class SpielplansController extends AdminController
 	 *
 	 * @return  object	The Model
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	public function getModel($name = 'Spielplan', $prefix = 'Administrator', $config = array())
 	{
@@ -85,7 +85,7 @@ class SpielplansController extends AdminController
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 *
 	 * @throws  Exception
 	 */

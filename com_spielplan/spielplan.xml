@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="4.0" method="upgrade">
     <name>com_spielplan</name>
-    <creationDate>2024-07-29</creationDate>
+    <creationDate>2024-08-19</creationDate>
     <copyright>2024 Thorsten Austen</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <author>Thorsten Austen</author>
     <authorEmail>thorsten.austen@gmail.com</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>CVS: 1.0.2</version>
-    <description>Verwalten des Vereinsspielplan, nachdem man ihn aus click-tt importiert hat. Biete sich an, um z.B. Spiele zu verlegen</description>
+    <version>CVS: 1.0.3</version>
+    <description>Verwalten des Vereinsspielplans, nachdem man ihn aus click-tt importiert hat. Biete sich an, um z.B. Spiele zu verlegen</description>
     <namespace path="src">Ttc\Component\Spielplan</namespace>
     
     

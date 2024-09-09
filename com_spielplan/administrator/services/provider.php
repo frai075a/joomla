@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -27,7 +27,7 @@ use Joomla\DI\ServiceProviderInterface;
 /**
  * The Spielplan service provider.
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 return new class implements ServiceProviderInterface
 {
@@ -38,7 +38,7 @@ return new class implements ServiceProviderInterface
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	public function register(Container $container)
 	{

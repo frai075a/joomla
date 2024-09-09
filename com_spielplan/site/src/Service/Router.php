@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -39,7 +39,7 @@ class Router extends RouterView
 	 *
 	 * @var    CategoryFactoryInterface
 	 *
-	 * @since  1.0.2
+	 * @since  1.0.3
 	 */
 	private $categoryFactory;
 
@@ -48,7 +48,7 @@ class Router extends RouterView
 	 *
 	 * @var    array
 	 *
-	 * @since  1.0.2
+	 * @since  1.0.3
 	 */
 	private $categoryCache = [];
 
@@ -79,7 +79,7 @@ class Router extends RouterView
 	 *
 	 * @return  CategoryInterface  The object containing categories
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	private function getCategories(array $options = []): CategoryInterface
 	{

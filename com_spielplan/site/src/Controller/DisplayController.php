@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,7 +19,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 /**
  * Display Component Controller
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 {
@@ -33,7 +33,7 @@ class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 	 * @param  CMSApplication       $app      The JApplication for the dispatcher
 	 * @param  Input              $input    Input
 	 *
-	 * @since  1.0.2
+	 * @since  1.0.3
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null, $app = null, $input = null)
 	{
@@ -48,7 +48,7 @@ class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 	 *
 	 * @return  \Joomla\CMS\MVC\Controller\BaseController  This object to support chaining.
 	 *
-	 * @since   1.0.2
+	 * @since   1.0.3
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{

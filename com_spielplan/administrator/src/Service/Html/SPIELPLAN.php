@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.2
+ * @version    CVS: 1.0.3
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -20,7 +20,7 @@ use Joomla\Database\DatabaseDriver;
 /**
  * Spielplan HTML Helper.
  *
- * @since  1.0.2
+ * @since  1.0.3
  */
 class SPIELPLAN
 {
