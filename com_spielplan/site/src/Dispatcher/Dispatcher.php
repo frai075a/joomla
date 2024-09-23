@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -17,7 +17,7 @@ use Joomla\CMS\Language\Text;
 /**
  * ComponentDispatcher class for Com_Spielplan
  *
- * @since  1.0.3
+ * @since  1.0.4
  */
 class Dispatcher extends ComponentDispatcher
 {
@@ -26,7 +26,7 @@ class Dispatcher extends ComponentDispatcher
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function dispatch()
 	{

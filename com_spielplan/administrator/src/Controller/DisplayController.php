@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,7 +19,7 @@ use Joomla\CMS\Router\Route;
 /**
  * Spielplan master display controller.
  *
- * @since  1.0.3
+ * @since  1.0.4
  */
 class DisplayController extends BaseController
 {
@@ -27,9 +27,9 @@ class DisplayController extends BaseController
 	 * The default view.
 	 *
 	 * @var    string
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
-	protected $default_view = 'spielplans';
+	protected $default_view = 'spielplaene';
 
 	/**
 	 * Method to display a view.
@@ -39,7 +39,7 @@ class DisplayController extends BaseController
 	 *
 	 * @return  BaseController|boolean  This object to support chaining.
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{

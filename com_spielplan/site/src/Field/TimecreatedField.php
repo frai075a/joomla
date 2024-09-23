@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,7 +19,7 @@ use \Joomla\CMS\Date\Date;
 /**
  * Supports an HTML select list of categories
  *
- * @since  1.0.3
+ * @since  1.0.4
  */
 class TimecreatedField extends FormField
 {
@@ -27,7 +27,7 @@ class TimecreatedField extends FormField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	protected $type = 'timecreated';
 
@@ -36,7 +36,7 @@ class TimecreatedField extends FormField
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	protected function getInput()
 	{

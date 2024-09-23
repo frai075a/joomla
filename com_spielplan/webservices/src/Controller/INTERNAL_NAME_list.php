@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -15,7 +15,7 @@ use Joomla\CMS\MVC\Controller\ApiController;
 /**
  * The XXX_UCFIRST_INTERNAL_NAME_FORCE_LIST_XXX controller
  *
- * @since  1.0.3
+ * @since  1.0.4
  */
 class XXX_UCFIRST_INTERNAL_NAME_FORCE_LIST_XXXController extends ApiController 
 {
@@ -23,7 +23,7 @@ class XXX_UCFIRST_INTERNAL_NAME_FORCE_LIST_XXXController extends ApiController
 	 * The content type of the item.
 	 *
 	 * @var    string
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	protected $contentType = 'XXX_INTERNAL_NAME_FORCE_LIST_XXX';
 
@@ -31,7 +31,7 @@ class XXX_UCFIRST_INTERNAL_NAME_FORCE_LIST_XXXController extends ApiController
 	 * The default view for the display method.
 	 *
 	 * @var    string
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	protected $default_view = 'XXX_INTERNAL_NAME_FORCE_LIST_XXX';
 }

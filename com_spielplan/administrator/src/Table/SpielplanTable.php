@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -30,7 +30,7 @@ use \Joomla\CMS\Helper\ContentHelper;
 /**
  * Spielplan table
  *
- * @since 1.0.3
+ * @since 1.0.4
  */
 class SpielplanTable extends Table implements VersionableTableInterface, TaggableTableInterface
 {
@@ -63,7 +63,7 @@ class SpielplanTable extends Table implements VersionableTableInterface, Taggabl
 	 *
 	 * @return  string  The alias as described above
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function getTypeAlias()
 	{
@@ -79,7 +79,7 @@ class SpielplanTable extends Table implements VersionableTableInterface, Taggabl
 	 * @return  boolean  True on success.
 	 *
 	 * @see     Table:bind
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 * @throws  \InvalidArgumentException
 	 */
 	public function bind($array, $ignore = '')
@@ -142,7 +142,7 @@ class SpielplanTable extends Table implements VersionableTableInterface, Taggabl
 	 *
 	 * @return  boolean  True on success.
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function store($updateNulls = true)
 	{

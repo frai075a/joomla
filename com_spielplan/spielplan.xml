@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="4.0" method="upgrade">
+<extension type="component" version="5.0" method="upgrade">
     <name>com_spielplan</name>
-    <creationDate>2024-08-19</creationDate>
+    <creationDate>2024-09-19</creationDate>
     <copyright>2024 Thorsten Austen</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <author>Thorsten Austen</author>
     <authorEmail>thorsten.austen@gmail.com</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>CVS: 1.0.3</version>
+    <version>1.0.5</version>
     <description>Verwalten des Vereinsspielplans, nachdem man ihn aus click-tt importiert hat. Biete sich an, um z.B. Spiele zu verlegen</description>
     <namespace path="src">Ttc\Component\Spielplan</namespace>
     
@@ -49,7 +49,7 @@
         <menu>COM_SPIELPLAN</menu>
         <submenu>
             
-			<menu link="option=com_spielplan&amp;view=spielplans" view="spielplans" alt="Spielplan/Spielplans">COM_SPIELPLAN_TITLE_SPIELPLANS</menu>
+			<menu link="option=com_spielplan&amp;view=spielplaene" view="spielplaene" alt="Spielplan/Spielplaene">COM_SPIELPLAN_TITLE_SPIELPLAENE</menu>
 
         </submenu>
         <files folder="administrator">
@@ -85,3 +85,4 @@
 </extension>
 <!-- Component built by the Joomla Component Creator -->
 <!-- http://www.component-creator.com/ -->
+<!-- Im Vergleich zum Original wurde die Struktur der Tabelle ttc_ttc_spielplan angepasst, da die Reihenfolge sich nicht mehr fehlerfrei am Client ändern ließ -->

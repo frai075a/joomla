@@ -1,14 +1,14 @@
-.icon-48-spielplans {
-      background-image: url(../images/l_spielplans.png);
+.icon-48-spielplaene {
+      background-image: url(../images/l_spielplaene.png);
       padding-left:60px!important;
 }
 
 .icon-48-spielplan {
-      background-image: url(../images/l_spielplans.png);
+      background-image: url(../images/l_spielplaene.png);
       padding-left:60px!important;
 }
 
-.color-box-spielplans { 
+.color-box-spielplaene { 
       float: left;      width: 15px;      height: 15px;      margin-right: 5px;      border: 1px solid rgba(0, 0, 0, .2);}
 
 
