@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,7 +19,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 /**
  * Display Component Controller
  *
- * @since  1.0.3
+ * @since  1.0.4
  */
 class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 {
@@ -33,7 +33,7 @@ class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 	 * @param  CMSApplication       $app      The JApplication for the dispatcher
 	 * @param  Input              $input    Input
 	 *
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null, $app = null, $input = null)
 	{
@@ -48,13 +48,13 @@ class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 	 *
 	 * @return  \Joomla\CMS\MVC\Controller\BaseController  This object to support chaining.
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
 
-		$view = $this->input->getCmd('view', 'spielplans');
-		$view = $view == "featured" ? 'spielplans' : $view;
+		$view = $this->input->getCmd('view', 'spielplaene');
+		$view = $view == "featured" ? 'spielplaene' : $view;
 		$this->input->set('view', $view);
 		
 

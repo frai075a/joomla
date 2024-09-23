@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.3
+ * @version    CVS: 1.0.4
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -25,28 +25,28 @@ use Joomla\CMS\Event\AbstractEvent;
 /**
  * Spielplan model.
  *
- * @since  1.0.3
+ * @since  1.0.4
  */
 class SpielplanModel extends AdminModel
 {
 	/**
 	 * @var    string  The prefix to use with controller messages.
 	 *
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	protected $text_prefix = 'COM_SPIELPLAN';
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	public $typeAlias = 'com_spielplan.spielplan';
 
 	/**
 	 * @var    null  Item data
 	 *
-	 * @since  1.0.3
+	 * @since  1.0.4
 	 */
 	protected $item = null;
 
@@ -62,7 +62,7 @@ class SpielplanModel extends AdminModel
 	 *
 	 * @return  Table    A database object
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function getTable($type = 'Spielplan', $prefix = 'Administrator', $config = array())
 	{
@@ -77,7 +77,7 @@ class SpielplanModel extends AdminModel
 	 *
 	 * @return  \JForm|boolean  A \JForm object on success, false on failure
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
@@ -114,7 +114,7 @@ class SpielplanModel extends AdminModel
 	 *
 	 * @return  mixed  The data for the form.
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	protected function loadFormData()
 	{
@@ -142,7 +142,7 @@ class SpielplanModel extends AdminModel
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	public function getItem($pk = null)
 	{
@@ -262,7 +262,7 @@ class SpielplanModel extends AdminModel
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0.3
+	 * @since   1.0.4
 	 */
 	protected function prepareTable($table)
 	{
