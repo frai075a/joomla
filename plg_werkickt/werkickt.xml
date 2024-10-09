@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<extension type="plugin" group="content" version="5.0" method = "upgrade"> 
+  <name>Wer kickt</name> 
+  <author>Thorsten Austen</author> 
+  <creationDate>June 2013</creationDate> 
+  <copyright>(C) 2009 Thorsten Austen</copyright> 
+  <license>http://www.gnu.org/copyleft/gpl.html</license> 
+  <version>3.16</version> 
+  <description>Zu- und Absagen fuer den Mittwochsfussball werden ausgegeben</description> 
+  <files> 
+    <filename plugin="werkickt">werkickt.php</filename> 
+  </files>
+</extension>
