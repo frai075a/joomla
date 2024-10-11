@@ -8,5 +8,6 @@
 defined('_JEXEC') or die;
 require_once dirname(__FILE__) . '/helper.php';
 use Joomla\CMS\Helper\ModuleHelper;
-$daten = modHalleninfosHelper::getHalleninfos($params, $num_rows);
+use Joomla\CMS\Factory;
+$daten = modHalleninfosHelper::getHalleninfos($params);
 require ModuleHelper::getLayoutPath('mod_halleninfos', $params->get('layout', 'default'));

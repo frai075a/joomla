@@ -1,0 +1,3 @@
+--table spielplan allready exists
+;
+
