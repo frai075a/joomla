@@ -6,6 +6,7 @@
 
 // no direct access
 defined('_JEXEC') or die;
+use Joomla\CMS\Factory;
 
 /**
  * Austen - Samstagstermine Helper Class.
@@ -20,7 +21,8 @@ class modSamstagstermineHelper {
 	{	
 
         // Obtain a database connection
-	$db = JFactory::getDbo();
+	//$db = JFactory::getDbo();
+	$db = Factory::getContainer()->get('DatabaseDriver');	
 	// Retrieve the shout
     $q2  = $db->getQuery(true) 				
 				->select('startdate as datum, schliessinfo as heimmannschaft')

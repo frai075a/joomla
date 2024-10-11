@@ -6,7 +6,7 @@
 
 // no direct access
 defined('_JEXEC') or die;
-
+use Joomla\CMS\Factory;
 /**
  * Austen - QTTR Calc Helper Class.
  *
@@ -20,7 +20,8 @@ class modQttrcalcHelper {
 	{	
 
   // Obtain a database connection
-		$db2 = JFactory::getDbo();
+		//$db2 = JFactory::getDbo();
+	$db2 = Factory::getContainer()->get('DatabaseDriver');		
     $user = JFactory::getUser();
 		$user_id = $user->id;
 
@@ -30,7 +31,8 @@ class modQttrcalcHelper {
     
   public static function GetQTTRGames($params)
 		{
-		$db = JFactory::getDbo();
+		//$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$user = JFactory::getUser();
 		$user_id = $user->id;
 
@@ -48,7 +50,8 @@ class modQttrcalcHelper {
 	
   public static function GetOwnQTTRValues($params)
 		{
-		$db = JFactory::getDbo();
+		//$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$user = JFactory::getUser();
 		$user_id = $user->id;
 

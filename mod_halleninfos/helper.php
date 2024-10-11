@@ -6,6 +6,7 @@
 
 // no direct access
 defined('_JEXEC') or die;
+use Joomla\CMS\Factory;
 
 /**
  * Austen - Halleninfos Helper Class.
@@ -20,7 +21,8 @@ class modHalleninfosHelper {
 	{	
 
         // Obtain a database connection
-	$db = JFactory::getDbo();
+	//$db = JFactory::getDbo();
+	$db = Factory::getContainer()->get('DatabaseDriver');
 	// Retrieve the shout
  	$q1 = $db->getQuery(true)
                 ->select(array('datum', 'information', 'id'))

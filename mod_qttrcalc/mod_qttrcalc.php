@@ -10,6 +10,7 @@ defined('_JEXEC') or die;
 // include the syndicate functions only once
 require_once dirname(__FILE__) . '/helper.php';
 use Joomla\CMS\Helper\ModuleHelper;
+use Joomla\CMS\Factory;
 
 $class_sfx = htmlspecialchars($params->get('class_sfx'));
 
@@ -18,7 +19,7 @@ $ownqttrvalues=modQttrcalcHelper::GetOwnQTTRValues($params);
 if (isset($ownqttrvalues))
 {
 	$aenderungskonstante=modQttrcalcHelper::GetAenderungskonstante($ownqttrvalues[1], $ownqttrvalues[2], $ownqttrvalues[3]); 
-	$daten = modQttrcalcHelper::getQttrcalc($params, $num_rows);
+	$daten = modQttrcalcHelper::getQttrcalc($params);
 }
 
 require ModuleHelper::getLayoutPath('mod_qttrcalc', $params->get('layout', 'default'));
