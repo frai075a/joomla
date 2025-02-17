@@ -28,11 +28,11 @@ class modSamstagstermineHelper {
 				->select('startdate as datum, schliessinfo as heimmannschaft')
                 ->from('TTC_view_ferien');
 	$q1 = $db->getQuery(true)
-                ->select(array('datum', 'heimmannschaft'))
+                ->select('datum, LEFT(heimmannschaft, 11) as heimmannschaft')
 //				->select('datum, uhrzeit, heimmannschaft, mannschaft')
 	            ->from($db->quoteName('#__ttc_spielplan'))
 	            ->union($q2)
-				->where('heimmannschaft = "TTC Nordend Frankfurt" AND datum >= CURDATE() and WEEKDAY(datum) = 5')
+				->where('heimmannschaft LIKE "TTC Nordend%" AND datum >= CURDATE() and WEEKDAY(datum) = 5')
 				->order($db->quoteName(array('datum')));
 	// Prepare the query
 	$db->setQuery($q1);
