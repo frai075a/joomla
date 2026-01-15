@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.4
+ * @version    CVS: 1.0.6
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -22,7 +22,7 @@ use \Joomla\CMS\HTML\Helpers\Sidebar;
 /**
  * View class for a list of Spielplaene.
  *
- * @since  1.0.4
+ * @since  1.0.6
  */
 class HtmlView extends BaseHtmlView
 {
@@ -66,7 +66,7 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return  void
 	 *
-	 * @since   1.0.4
+	 * @since   1.0.6
 	 */
 	protected function addToolbar()
 	{
@@ -163,7 +163,6 @@ class HtmlView extends BaseHtmlView
 	protected function getSortFields()
 	{
 		return array(
-			'a.`id`' => Text::_('JGRID_HEADING_ID'),
 			'a.`mannschaft`' => Text::_('COM_SPIELPLAN_SPIELPLAENE_MANNSCHAFT'),
 			'a.`datum`' => Text::_('COM_SPIELPLAN_SPIELPLAENE_DATUM'),
 			'a.`uhrzeit`' => Text::_('COM_SPIELPLAN_SPIELPLAENE_UHRZEIT'),
