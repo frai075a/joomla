@@ -1,0 +1,29 @@
+{
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+  "name": "com_ttc_hallenfussball",
+  "version": "CVS: 2.1",
+  "license": "GNU General Public License version 2 or later; see LICENSE.txt",
+  "assets": [
+    {
+      "name": "com_ttc_hallenfussball.admin",
+      "type": "style",
+      "uri": "com_ttc_hallenfussball/admin.css"
+    },
+    {
+      "name": "com_ttc_hallenfussball.admin",
+      "type": "script",
+      "uri": "com_ttc_hallenfussball/admin.js",
+      "dependencies": [
+        "jquery"
+      ],
+      "attributes": {
+        "defer": true
+      }
+    },
+    {
+        "name": "com_ttc_hallenfussball.list",
+        "type": "style",
+        "uri": "com_ttc_hallenfussball/list.css"
+    }
+  ]
+}
