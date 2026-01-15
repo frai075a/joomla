@@ -113,7 +113,7 @@ class plgContentWerkickt extends CMSPlugin {
   
             foreach ($rows as $myrow) 
             {
-                $datum_umw = substr($myrow->datum, 8, 2).".".substr($myrow->datum, 5, 2).".".substr($myrow->datum, 0, 4);
+                $datum_umw = $myrow->wochentag.substr($myrow->datum, 8, 2).".".substr($myrow->datum, 5, 2).".".substr($myrow->datum, 0, 4);
                 if ($datum_alt != $datum_umw) {
                     if ($olcounter == 1)
                     {

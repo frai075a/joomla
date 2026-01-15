@@ -5,7 +5,7 @@
   <creationDate>June 2013</creationDate> 
   <copyright>(C) 2009 Thorsten Austen</copyright> 
   <license>http://www.gnu.org/copyleft/gpl.html</license> 
-  <version>3.16</version> 
+  <version>3.2</version> 
   <description>Zu- und Absagen fuer den Mittwochsfussball werden ausgegeben</description> 
   <files> 
     <filename plugin="werkickt">werkickt.php</filename> 
