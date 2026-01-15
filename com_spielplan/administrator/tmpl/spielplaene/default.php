@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.4
+ * @version    CVS: 1.0.6
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -86,9 +86,6 @@ if (!empty($saveOrder))
 							<?php echo HTMLHelper::_('searchtools.sort',  'COM_SPIELPLAN_SPIELPLAENE_ORT', 'a.ort', $listDirn, $listOrder); ?>
 						</th>
 						
-					<th scope="col" class="w-3 d-none d-lg-table-cell" >
-
-						<?php echo HTMLHelper::_('searchtools.sort',  'JGRID_HEADING_ID', 'a.id', $listDirn, $listOrder); ?>					</th>
 					</tr>
 					</thead>
 					<tfoot>
@@ -117,7 +114,7 @@ if (!empty($saveOrder))
 								<?php echo $item->mannschaft; ?>
 							</td>
 							<td>
-								<?php echo $item->datum; ?>
+								<?php echo Factory::getDate($item->datum)->format(Text::_('d.m.Y')); ?>
 							</td>
 							<td>
 								<?php echo Factory::getDate($item->uhrzeit)->format(Text::_('H:i')); ?>
@@ -147,11 +144,6 @@ if (!empty($saveOrder))
 								<?php echo $item->ort; ?>
 							</td>
 							
-							<td class="d-none d-lg-table-cell">
-							<?php echo $item->id; ?>
-
-							</td>
-
 
 						</tr>
 					<?php endforeach; ?>

@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.4
+ * @version    CVS: 1.0.6
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -9,7 +9,7 @@
 
 namespace Ttc\Component\Spielplan\Administrator\Extension;
 
-defined('JPATH_PLATFORM') or die;
+defined('_JEXEC') or die;
 
 use Ttc\Component\Spielplan\Administrator\Service\Html\SPIELPLAN;
 use Joomla\CMS\Application\SiteApplication;
@@ -28,7 +28,7 @@ use Joomla\CMS\Categories\CategoryServiceInterface;
 /**
  * Component class for Spielplan
  *
- * @since  1.0.4
+ * @since  1.0.6
  */
 class SpielplanComponent extends MVCComponent implements RouterServiceInterface, BootableExtensionInterface, CategoryServiceInterface
 {
@@ -57,7 +57,7 @@ class SpielplanComponent extends MVCComponent implements RouterServiceInterface,
 	 *
 	 * @since   4.0.0
 	 */
-	    protected function getTableNameForSection(string $section = null)            
+	    protected function getTableNameForSection(?string $section = null)            
 	{
 	}
 	

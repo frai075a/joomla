@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.4
+ * @version    CVS: 1.0.6
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -14,13 +14,13 @@ defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\DatabaseAwareTrait;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 
 /**
  * Spielplan HTML Helper.
  *
- * @since  1.0.4
+ * @since  1.0.6
  */
 class SPIELPLAN
 {
@@ -33,7 +33,7 @@ class SPIELPLAN
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->setDbo($db);
+		$this->setDatabase($db);
 	}
 
 	public function toggle($value = 0, $view='', $field='', $i='')

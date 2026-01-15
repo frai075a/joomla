@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.4
+ * @version    CVS: 1.0.6
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -23,7 +23,7 @@ use Ttc\Component\Spielplan\Administrator\Helper\SpielplanHelper;
 /**
  * Methods supporting a list of Spielplaene records.
  *
- * @since  1.0.4
+ * @since  1.0.6
  */
 class SpielplaeneModel extends ListModel
 {
@@ -78,8 +78,6 @@ class SpielplaeneModel extends ListModel
 	 */
 	protected function populateState($ordering = null, $direction = null)
 	{
-		// List state information.
-		parent::populateState('id', 'ASC');
 
 		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $context);
@@ -95,6 +93,18 @@ class SpielplaeneModel extends ListModel
 				$this->setState('filter.section', $parts[1]);
 			}
 		}
+		
+        // Filter "mannschaft" einlesen
+        $mannschaft = $this->getUserStateFromRequest($this->mannschaft.'.filter.mannschaft', 'filter_mannschaft'); //$app->getInput()->get('filter.mannschaft', '', 'string');
+        $this->setState('filter.mannschaft', $mannschaft);
+        // Filter "offeneSpiele" einlesen, um zu entscheiden, was angezeigt wird
+        $offenespiele = $this->getUserStateFromRequest($this->offenespiele.'.filter.offenespiele', 'filter_offenespiele'); //$app->getInput()->get('filter.offenespiele', '', 'string');
+        $this->setState('filter.offenespiele', $offenespiele);
+
+
+		// List state information.
+		parent::populateState('id', 'ASC');
+
 	}
 
 	/**
@@ -108,7 +118,7 @@ class SpielplaeneModel extends ListModel
 	 *
 	 * @return  string A store id.
 	 *
-	 * @since   1.0.4
+	 * @since   1.0.6
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -126,7 +136,7 @@ class SpielplaeneModel extends ListModel
 	 *
 	 * @return  DatabaseQuery
 	 *
-	 * @since   1.0.4
+	 * @since   1.0.6
 	 */
 	protected function getListQuery()
 	{
@@ -146,7 +156,6 @@ class SpielplaeneModel extends ListModel
 
 		// Filter by search in title
 		$search = $this->getState('filter.search');
-
 		if (!empty($search))
 		{
 			if (stripos($search, 'id:') === 0)
@@ -159,7 +168,17 @@ class SpielplaeneModel extends ListModel
 				$query->where('( a.mannschaft LIKE ' . $search . '  OR  a.datum LIKE ' . $search . ' )');
 			}
 		}
-		
+
+        // Filter on mannschaft
+		$mannschaft = $this->getState('filter.mannschaft');
+        if (!empty($mannschaft)) {
+            $query->where($db->quoteName('a.mannschaft') . ' = ' . $db->quote($mannschaft));
+        }
+		// Filter offene Spiele
+		$offenespiele = $this->getState('filter.offenespiele');
+        if (!empty($offenespiele)) {
+            $query->where($db->quoteName('a.datum') . ' >= CURRENT_DATE');
+        }
 		// Add the list ordering clause.
 		$orderCol  = $this->state->get('list.ordering', 'id');
 		$orderDirn = $this->state->get('list.direction', 'ASC');

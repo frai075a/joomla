@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.0.4
+ * @version    CVS: 1.0.6
  * @package    Com_Spielplan
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -15,11 +15,12 @@ use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
 use \Joomla\CMS\Form\FormField;
 use \Joomla\CMS\Date\Date;
+use Joomla\CMS\HTML\HTMLHelper;
 
 /**
  * Supports an HTML select list of categories
  *
- * @since  1.0.4
+ * @since  1.0.6
  */
 class TimeupdatedField extends FormField
 {
@@ -27,7 +28,7 @@ class TimeupdatedField extends FormField
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.0.4
+	 * @since  1.0.6
 	 */
 	protected $type = 'timeupdated';
 
@@ -36,7 +37,7 @@ class TimeupdatedField extends FormField
 	 *
 	 * @return  string    The field input markup.
 	 *
-	 * @since   1.0.4
+	 * @since   1.0.6
 	 */
 	protected function getInput()
 	{
@@ -54,8 +55,7 @@ class TimeupdatedField extends FormField
 			}
 			else
 			{
-				$jdate       = new Date($old_time_updated);
-				$pretty_date = $jdate->format(Text::_('DATE_FORMAT_LC2'));
+				$pretty_date = HTMLHelper::_('date', $old_time_updated, Text::_('DATE_FORMAT_LC2'), true);
 				$html[]      = "<div>" . $pretty_date . "</div>";
 			}
 		}
