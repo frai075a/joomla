@@ -63,6 +63,104 @@ class SpielplaeneController extends AdminController
 	}
 
 	/**
+	 * Importiert einen Spielplan aus einer hochgeladenen CSV-Datei.
+	 * Die CSV wird in eine temporäre Tabelle geladen, dann per
+	 * INSERT ... SELECT in #__ttc_spielplan übertragen (Transaktion).
+	 *
+	 * @return  void
+	 *
+	 * @throws  \Exception
+	 *
+	 * @since   1.0.6
+	 */
+	public function importSpielplan()
+	{
+		// CSRF-Token prüfen
+		$this->checkToken();
+
+		$user = Factory::getApplication()->getIdentity();
+
+		if (!$user->authorise('core.create', 'com_spielplan'))
+		{
+			Factory::getApplication()->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$this->setRedirect('index.php?option=com_spielplan&view=spielplaene');
+			return;
+		}
+
+		// Datei-Upload prüfen
+		$app  = Factory::getApplication();
+		$file = $app->input->files->get('spielplan_csv', null, 'raw');
+
+		if (empty($file) || $file['error'] !== UPLOAD_ERR_OK)
+		{
+			$app->enqueueMessage(Text::_('COM_SPIELPLAN_IMPORT_ERROR_NO_FILE'), 'error');
+			$this->setRedirect('index.php?option=com_spielplan&view=spielplaene');
+			return;
+		}
+
+		// Dateierweiterung prüfen
+		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+		if ($ext !== 'csv')
+		{
+			$app->enqueueMessage(Text::_('COM_SPIELPLAN_IMPORT_ERROR_WRONG_TYPE'), 'error');
+			$this->setRedirect('index.php?option=com_spielplan&view=spielplaene');
+			return;
+		}
+
+		try
+		{
+			$model = $this->getModel('Spielplaene', 'Administrator');
+			$count = $model->importSpielplan($file['tmp_name']);
+			$this->setMessage(Text::sprintf('COM_SPIELPLAN_IMPORT_SUCCESS', $count));
+		}
+		catch (\Exception $e)
+		{
+			$app->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		$this->setRedirect('index.php?option=com_spielplan&view=spielplaene');
+	}
+
+	/**
+	 * Löscht alle Spielplan-Einträge, bei denen mannschaft > 0 ist.
+	 *
+	 * @return  void
+	 *
+	 * @throws  Exception
+	 *
+	 * @since   1.0.6
+	 */
+	public function deleteSpielplan()
+	{
+		// CSRF-Token prüfen
+		$this->checkToken();
+
+		// Nur Admins mit delete-Recht dürfen diese Aktion ausführen
+		$user = Factory::getApplication()->getIdentity();
+
+		if (!$user->authorise('core.delete', 'com_spielplan'))
+		{
+			Factory::getApplication()->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'error');
+			$this->setRedirect('index.php?option=com_spielplan&view=spielplaene');
+			return;
+		}
+
+		try
+		{
+			$model = $this->getModel('Spielplaene', 'Administrator');
+			$count = $model->deleteSpielplan();
+			$this->setMessage(Text::sprintf('COM_SPIELPLAN_DELETE_SPIELPLAN_SUCCESS', $count));
+		}
+		catch (\Exception $e)
+		{
+			Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+		}
+
+		$this->setRedirect('index.php?option=com_spielplan&view=spielplaene');
+	}
+
+	/**
 	 * Proxy for getModel.
 	 *
 	 * @param   string  $name    Optional. Model name

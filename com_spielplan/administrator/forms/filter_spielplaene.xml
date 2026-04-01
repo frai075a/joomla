@@ -6,7 +6,9 @@
 			<option value="">JOPTION_SELECT_PUBLISHED</option>
 		</field>
 		<field name="mannschaft" label="Mannschaft wählen" type="sql" 
-		       query="SELECT DISTINCT mannschaft AS value, mannschaft AS text FROM #__ttc_spielplan ORDER BY mannschaft"
+		       key_field="value"
+		       value_field="text"
+		       query="SELECT DISTINCT mannschaft, mannschaft AS value, CONCAT('Mannschaft ', mannschaft) AS text FROM #__ttc_spielplan WHERE mannschaft > 0 ORDER BY mannschaft"
 			   onchange="this.form.submit();">
 			<option value="">- alle Mannschaften -</option>
 		</field>

@@ -165,7 +165,7 @@ class SpielplaeneModel extends ListModel
 			else
 			{
 				$search = $db->Quote('%' . $db->escape($search, true) . '%');
-				$query->where('( a.mannschaft LIKE ' . $search . '  OR  a.datum LIKE ' . $search . ' )');
+				$query->where('( a.heimmannschaft LIKE ' . $search . '  OR  a.auswaertsmannschaft LIKE ' . $search . ' OR  a.ort LIKE ' . $search . ' )');
 			}
 		}
 
@@ -189,6 +189,244 @@ class SpielplaeneModel extends ListModel
 		}
 
 		return $query;
+	}
+
+	/**
+	 * Importiert eine CSV-Datei in die temporäre Tabelle und überträgt
+	 * die Daten per INSERT ... SELECT in #__ttc_spielplan.
+	 * Läuft vollständig in einer Transaktion (Rollback bei Fehler).
+	 *
+	 * Erwartete CSV-Spalten (Header-Zeile erforderlich):
+	 *   Termin, HeimVereinName, HeimMannschaftNr, GastVereinName,
+	 *   GastMannschaftNr, HalleName, HalleStrasse, HallePLZ, HalleOrt
+	 *
+	 * @param   string  $tmpFile  Pfad zur hochgeladenen temporären Datei
+	 *
+	 * @return  int  Anzahl importierter Datensätze
+	 *
+	 * @throws  \RuntimeException
+	 *
+	 * @since   1.0.6
+	 */
+public function importSpielplan(string $tmpFile): int
+	{
+		$db = $this->getDbo();
+
+		// ----------------------------------------------------------------
+		// 1. CSV einlesen
+		// ----------------------------------------------------------------
+
+		// Datei öffnen – sofort auf Fehler prüfen
+		$handle = fopen($tmpFile, 'r');
+
+		if ($handle === false)
+		{
+			throw new \RuntimeException('COM_SPIELPLAN_IMPORT_ERROR_FILE_READ');
+		}
+
+		// Encoding der Datei erkennen (4 KB Sample reicht für mb_detect_encoding)
+		$sample = fread($handle, 4096);
+		rewind($handle);
+
+		$encoding = mb_detect_encoding(
+			$sample,
+			['UTF-8', 'Windows-1252', 'ISO-8859-1'],
+			true
+		);
+
+		// Fallback falls nichts erkannt wird
+		if ($encoding === false)
+		{
+			$encoding = 'Windows-1252';
+		}
+
+		$convertToUtf8 = function ($value) use ($encoding) {
+			if ($value === null || $value === '')
+			{
+				return '';
+			}
+
+			return trim(mb_convert_encoding($value, 'UTF-8', $encoding));
+		};
+
+		// BOM entfernen falls vorhanden (UTF-8 BOM: EF BB BF)
+		$firstBytes = fread($handle, 3);
+
+		if ($firstBytes !== "\xEF\xBB\xBF")
+		{
+			rewind($handle);
+		}
+
+		// Header-Zeile einlesen
+		$rawHeaders = fgetcsv($handle, 0, ';');
+
+		if ($rawHeaders === false || empty($rawHeaders))
+		{
+			fclose($handle);
+			throw new \RuntimeException('COM_SPIELPLAN_IMPORT_ERROR_EMPTY_FILE');
+		}
+
+		// Encoding konvertieren und Whitespace bereinigen
+		$headers = array_map($convertToUtf8, $rawHeaders);
+
+		// Pflichtfelder prüfen
+		$required = [
+			'Termin', 'HeimVereinName', 'HeimMannschaftNr',
+			'GastVereinName', 'GastMannschaftNr',
+			'HalleName', 'HalleStrasse', 'HallePLZ', 'HalleOrt',
+		];
+
+		$missing = array_diff($required, $headers);
+
+		if (!empty($missing))
+		{
+			fclose($handle);
+			throw new \RuntimeException(
+				'COM_SPIELPLAN_IMPORT_ERROR_MISSING_COLUMNS: ' . implode(', ', $missing)
+			);
+		}
+
+		$colIndex = array_flip($headers);
+
+		// Alle Datenzeilen sammeln
+		$csvRows = [];
+
+		while (($row = fgetcsv($handle, 0, ';')) !== false)
+		{
+			if (count(array_filter($row)) === 0)
+			{
+				// Leerzeile überspringen
+				continue;
+			}
+			$row = array_map($convertToUtf8, $row);
+		//	$row = array_map('trim', $row);
+			$csvRows[] = $row;
+		}
+
+		fclose($handle);
+
+		if (empty($csvRows))
+		{
+			throw new \RuntimeException('COM_SPIELPLAN_IMPORT_ERROR_NO_DATA');
+		}
+
+		// ----------------------------------------------------------------
+		// 2. Transaktion starten
+		// ----------------------------------------------------------------
+		$db->transactionStart();
+
+		try
+		{
+			// Temporäre Tabelle leeren (oder anlegen falls nicht vorhanden)
+			$db->setQuery('
+				CREATE TABLE IF NOT EXISTS `ttc_spielplan_import_tmp` (
+					`Termin`           VARCHAR(20)  NOT NULL DEFAULT \'\',
+					`HeimVereinName`   VARCHAR(100) NOT NULL DEFAULT \'\',
+					`HeimMannschaftNr` TINYINT(2)   NOT NULL DEFAULT 0,
+					`GastVereinName`   VARCHAR(100) NOT NULL DEFAULT \'\',
+					`GastMannschaftNr` TINYINT(2)   NOT NULL DEFAULT 0,
+					`HalleName`        VARCHAR(100) NOT NULL DEFAULT \'\',
+					`HalleStrasse`     VARCHAR(100) NOT NULL DEFAULT \'\',
+					`HallePLZ`         VARCHAR(10)  NOT NULL DEFAULT \'\',
+					`HalleOrt`         VARCHAR(100) NOT NULL DEFAULT \'\'
+				) DEFAULT COLLATE=utf8mb4_unicode_ci
+			')->execute();
+
+			$db->setQuery('TRUNCATE TABLE `ttc_spielplan_import_tmp`')->execute();
+
+			// CSV-Zeilen in die temporäre Tabelle einfügen
+			foreach ($csvRows as $row)
+			{
+				$obj                   = new \stdClass();
+				$obj->Termin           = $row[$colIndex['Termin']]           ?? '';
+				$obj->HeimVereinName   = $row[$colIndex['HeimVereinName']]   ?? '';
+				$obj->HeimMannschaftNr = (int) ($row[$colIndex['HeimMannschaftNr']] ?? 0);
+				$obj->GastVereinName   = $row[$colIndex['GastVereinName']]   ?? '';
+				$obj->GastMannschaftNr = (int) ($row[$colIndex['GastMannschaftNr']] ?? 0);
+				$obj->HalleName        = $row[$colIndex['HalleName']]        ?? '';
+				$obj->HalleStrasse     = $row[$colIndex['HalleStrasse']]     ?? '';
+				$obj->HallePLZ         = $row[$colIndex['HallePLZ']]         ?? '';
+				$obj->HalleOrt         = $row[$colIndex['HalleOrt']]         ?? '';
+
+				$db->insertObject('ttc_spielplan_import_tmp', $obj);
+			}
+
+			// ----------------------------------------------------------------
+			// 3. INSERT ... SELECT in die Zieltabelle
+			// ----------------------------------------------------------------
+			$db->setQuery('
+				INSERT INTO `#__ttc_spielplan`
+					(mannschaft, datum, uhrzeit,
+					 heimmannschaft, h_nummer,
+					 auswaertsmannschaft, a_nummer,
+					 ort, hallennr, ort_key)
+				SELECT
+					CASE
+						WHEN `HeimVereinName` = \'TTC Nordend Frankfurt\' THEN `HeimMannschaftNr`
+						ELSE `GastMannschaftNr`
+					END AS mannschaft,
+					STR_TO_DATE(
+						CONCAT(SUBSTR(Termin,7,4),\'-\',SUBSTR(Termin,4,2),\'-\',SUBSTR(Termin,1,2)),
+						\'%Y-%m-%d\'
+					) AS datum,
+					TIME(SUBSTR(Termin,12,5)) AS uhrzeit,
+					`HeimVereinName` AS heimmannschaft,
+					CASE `HeimMannschaftNr`
+						WHEN 1  THEN \'I\'    WHEN 2  THEN \'II\'   WHEN 3  THEN \'III\'
+						WHEN 4  THEN \'IV\'   WHEN 5  THEN \'V\'    WHEN 6  THEN \'VI\'
+						WHEN 7  THEN \'VII\'  WHEN 8  THEN \'VIII\' WHEN 9  THEN \'IX\'
+						WHEN 10 THEN \'X\'    WHEN 11 THEN \'XI\'   WHEN 12 THEN \'XII\'
+						WHEN 13 THEN \'XIII\'
+					END AS h_nummer,
+					`GastVereinName` AS auswaertsmannschaft,
+					CASE `GastMannschaftNr`
+						WHEN 1  THEN \'I\'    WHEN 2  THEN \'II\'   WHEN 3  THEN \'III\'
+						WHEN 4  THEN \'IV\'   WHEN 5  THEN \'V\'    WHEN 6  THEN \'VI\'
+						WHEN 7  THEN \'VII\'  WHEN 8  THEN \'VIII\' WHEN 9  THEN \'IX\'
+						WHEN 10 THEN \'X\'    WHEN 11 THEN \'XI\'   WHEN 12 THEN \'XII\'
+						WHEN 13 THEN \'XIII\'
+					END AS a_nummer,
+					CONCAT(`HalleName`, \', \', `HalleStrasse`, \', \', `HallePLZ`, \' \', `HalleOrt`) AS ort,
+					0    AS hallennr,
+					0    AS ort_key
+				FROM `ttc_spielplan_import_tmp`
+				WHERE 1
+			')->execute();
+
+			$count = (int) $db->getAffectedRows();
+
+			$db->transactionCommit();
+		}
+		catch (\Exception $e)
+		{
+			$db->transactionRollback();
+			throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+		}
+
+		return $count;
+	}
+
+	/**
+	 * Löscht alle Spielplan-Einträge, bei denen mannschaft > 0 ist.
+	 *
+	 * @return  int  Anzahl der gelöschten Datensätze
+	 *
+	 * @throws  \RuntimeException
+	 *
+	 * @since   1.0.6
+	 */
+	public function deleteSpielplan(): int
+	{
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		$query->delete($db->quoteName('#__ttc_spielplan'))
+		      ->where($db->quoteName('mannschaft') . ' > 0');
+
+		$db->setQuery($query);
+		$db->execute();
+
+		return (int) $db->getAffectedRows();
 	}
 
 	/**

@@ -18,3 +18,15 @@ CREATE INDEX `#__ttc_spielplan_mannschaft` ON `#__ttc_spielplan`(`mannschaft`);
 
 CREATE INDEX `#__ttc_spielplan_datum` ON `#__ttc_spielplan`(`datum`);
 
+
+CREATE TABLE IF NOT EXISTS `ttc_spielplan_import_tmp` (
+    `Termin`           VARCHAR(20)  NOT NULL DEFAULT '',
+    `HeimVereinName`   VARCHAR(100) NOT NULL DEFAULT '',
+    `HeimMannschaftNr` TINYINT(2)   NOT NULL DEFAULT 0,
+    `GastVereinName`   VARCHAR(100) NOT NULL DEFAULT '',
+    `GastMannschaftNr` TINYINT(2)   NOT NULL DEFAULT 0,
+    `HalleName`        VARCHAR(100) NOT NULL DEFAULT '',
+    `HalleStrasse`     VARCHAR(100) NOT NULL DEFAULT '',
+    `HallePLZ`         VARCHAR(10)  NOT NULL DEFAULT '',
+    `HalleOrt`         VARCHAR(100) NOT NULL DEFAULT ''
+) DEFAULT COLLATE=utf8mb4_unicode_ci;

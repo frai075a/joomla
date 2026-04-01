@@ -158,3 +158,48 @@ if (!empty($saveOrder))
 		</div>
 	</div>
 </form>
+<?php if ($user->authorise('core.create', 'com_spielplan')) : ?>
+<form action="<?php echo Route::_('index.php?option=com_spielplan&task=spielplaene.importSpielplan'); ?>"
+      method="post" name="importSpielplanForm" id="importSpielplanForm"
+      enctype="multipart/form-data"
+      style="margin-top: 1rem;">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+        <div>
+            <label for="spielplan_csv" class="form-label mb-1">
+                <?php echo Text::_('COM_SPIELPLAN_IMPORT_LABEL_FILE'); ?>
+            </label>
+            <input type="file"
+                   id="spielplan_csv"
+                   name="spielplan_csv"
+                   accept=".csv"
+                   class="form-control"
+                   style="max-width: 360px;"
+                   required />
+        </div>
+        <div style="padding-top: 1.5rem;">
+            <button type="submit" class="btn btn-success"
+                    onclick="return confirm('<?php echo Text::_('COM_SPIELPLAN_IMPORT_CONFIRM'); ?>');">
+                <span class="icon-upload" aria-hidden="true"></span>
+                <?php echo Text::_('COM_SPIELPLAN_IMPORT_BUTTON'); ?>
+            </button>
+        </div>
+    </div>
+    <div class="form-text text-muted mt-1">
+        <?php echo Text::_('COM_SPIELPLAN_IMPORT_HINT'); ?>
+    </div>
+    <?php echo HTMLHelper::_('form.token'); ?>
+</form>
+<?php endif; ?>
+
+<?php if ($user->authorise('core.delete', 'com_spielplan')) : ?>
+<form action="<?php echo Route::_('index.php?option=com_spielplan&task=spielplaene.deleteSpielplan'); ?>"
+      method="post" name="deleteSpielplanForm" id="deleteSpielplanForm"
+      style="margin-top: 1rem;">
+    <button type="submit" class="btn btn-danger"
+            onclick="return confirm('<?php echo Text::_('COM_SPIELPLAN_DELETE_SPIELPLAN_CONFIRM'); ?>');">
+        <span class="icon-trash" aria-hidden="true"></span>
+        <?php echo Text::_('COM_SPIELPLAN_DELETE_SPIELPLAN_BUTTON'); ?>
+    </button>
+    <?php echo HTMLHelper::_('form.token'); ?>
+</form>
+<?php endif; ?>
