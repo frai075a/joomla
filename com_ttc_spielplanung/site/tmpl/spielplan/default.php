@@ -10,25 +10,37 @@ $user = Factory::getApplication()->getIdentity();
 ?>
 
 <style>
-    .com-ttc-spielplanung-status-switch .form-check-input[role="switch"] {
-        width: 3rem;
-        height: 1.6rem;
+    .com-ttc-spielplanung-status-switch {
+        display: inline-grid;
+        grid-template-columns: repeat(3, auto);
+        position: relative;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #6c757d;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .com-ttc-spielplanung-status-switch input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+    }
+    .com-ttc-spielplanung-status-switch label {
+        padding: 0.45rem 0.65rem;
         cursor: pointer;
-        background-color: #dc3545;
-        border-color: #dc3545;
+        margin: 0;
+        background: #fff;
+        color: #212529;
     }
-    .com-ttc-spielplanung-status-switch .form-check-input[role="switch"]:checked {
-        background-color: #198754;
-        border-color: #198754;
+    .com-ttc-spielplanung-status-switch input:checked + label {
+        background: #495057;
+        color: #fff;
+        font-weight: 700;
     }
-    .com-ttc-spielplanung-status-switch .form-check-input[role="switch"]:focus {
-        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
-    }
-    .com-ttc-spielplanung-status-switch .form-check-label {
-        margin-left: 0.5rem;
-        vertical-align: middle;
-        font-weight: 500;
-    }
+    .com-ttc-spielplanung-status-switch input[value="0"]:checked + label { background: #b02a37; }
+    .com-ttc-spielplanung-status-switch input[value="1"]:checked + label { background: #146c43; }
+    .com-ttc-spielplanung-status-switch input:focus-visible + label { outline: 3px solid #0d6efd; outline-offset: -3px; }
     .com-ttc-spielplanung-filter-box {
         display: flex;
         flex-wrap: wrap;
@@ -82,16 +94,7 @@ $user = Factory::getApplication()->getIdentity();
                                 <td><?php echo htmlspecialchars($game['gegner'], ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td><?php echo htmlspecialchars($game['sporthalle'], ENT_QUOTES, 'UTF-8'); ?></td>
                                 <td>
-                                    <?php $statusChecked = ($game['status'] === null || $game['status'] == 1); ?>
-                                    <div class="form-check form-switch com-ttc-spielplanung-status-switch"
-                                         data-label-yes="<?php echo htmlspecialchars(Text::_('COM_TTC_SPIELPLANUNG_STATUS_YES'), ENT_QUOTES, 'UTF-8'); ?>"
-                                         data-label-no="<?php echo htmlspecialchars(Text::_('COM_TTC_SPIELPLANUNG_STATUS_NO'), ENT_QUOTES, 'UTF-8'); ?>">
-                                        <input type="hidden" name="status_<?php echo (int) $game['game_id']; ?>" value="0" />
-                                        <input type="checkbox" class="form-check-input" role="switch" id="status_<?php echo (int) $game['game_id']; ?>" name="status_<?php echo (int) $game['game_id']; ?>" value="1" aria-checked="<?php echo $statusChecked ? 'true' : 'false'; ?>" <?php echo $statusChecked ? 'checked="checked"' : ''; ?> />
-                                        <label class="form-check-label" for="status_<?php echo (int) $game['game_id']; ?>">
-                                            <?php echo $statusChecked ? Text::_('COM_TTC_SPIELPLANUNG_STATUS_YES') : Text::_('COM_TTC_SPIELPLANUNG_STATUS_NO'); ?>
-                                        </label>
-                                    </div>
+                                    <?php require __DIR__ . '/../status.php'; ?>
                                     <input type="hidden" name="game_ids[]" value="<?php echo (int) $game['game_id']; ?>" />
                                 </td>
                             </tr>
@@ -112,13 +115,4 @@ $user = Factory::getApplication()->getIdentity();
     <?php endif; ?>
 </div>
 
-<script>
-    document.querySelectorAll('.com-ttc-spielplanung-status-switch .form-check-input[role="switch"]').forEach(function (input) {
-        input.addEventListener('change', function () {
-            var wrapper = input.closest('.com-ttc-spielplanung-status-switch');
-            var label = wrapper.querySelector('.form-check-label');
-            input.setAttribute('aria-checked', input.checked ? 'true' : 'false');
-            label.textContent = input.checked ? wrapper.dataset.labelYes : wrapper.dataset.labelNo;
-        });
-    });
-</script>
+

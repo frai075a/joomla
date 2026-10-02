@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `#__ttc_spielplanung` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `user_id` INT(11) NOT NULL,
     `game_id` INT(11) NOT NULL,
-    `status` TINYINT(3) NOT NULL DEFAULT 1,
+    `status` TINYINT(3) NULL DEFAULT NULL,
     `state` TINYINT(3) NOT NULL DEFAULT 1,
     `created` DATETIME NOT NULL,
     `created_by` INT(11) NOT NULL DEFAULT 0,

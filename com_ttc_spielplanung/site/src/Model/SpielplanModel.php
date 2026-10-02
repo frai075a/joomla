@@ -87,7 +87,7 @@ class SpielplanModel extends BaseDatabaseModel
             if ((!is_int($gameId) && !is_string($gameId))
                 || !preg_match('/^[1-9][0-9]*$/D', (string) $gameId)
                 || filter_var($gameId, FILTER_VALIDATE_INT) === false
-                || !in_array($status, array(0, 1, '0', '1'), true)) {
+                || !in_array($status, array(null, 0, 1, '0', '1'), true)) {
                 return false;
             }
         }
@@ -107,7 +107,8 @@ class SpielplanModel extends BaseDatabaseModel
 
             foreach ($statuses as $gameId => $status) {
                 $gameId = (int) $gameId;
-                $status = (int) $status;
+                $status = $status === null ? null : (int) $status;
+                $sqlStatus = $status === null ? 'NULL' : (string) $status;
 
                 $query = $db->getQuery(true)
                     ->select('id, status')
@@ -117,12 +118,12 @@ class SpielplanModel extends BaseDatabaseModel
                 $db->setQuery($query);
                 $existing = $db->loadObject();
 
-                $oldStatus = $existing ? (int) $existing->status : 1;
+                $oldStatus = $existing && $existing->status !== null ? (int) $existing->status : null;
 
                 if ($existing) {
                     $query = $db->getQuery(true)
                         ->update($db->quoteName('#__ttc_spielplanung'))
-                        ->set('status = ' . $status)
+                        ->set('status = ' . $sqlStatus)
                         ->set('modified = ' . $db->quote($now))
                         ->set('modified_by = ' . (int) $user->id)
                         ->where('id = ' . (int) $existing->id);
@@ -132,7 +133,7 @@ class SpielplanModel extends BaseDatabaseModel
                     $query = $db->getQuery(true)
                         ->insert($db->quoteName('#__ttc_spielplanung'))
                         ->columns(array('user_id', 'game_id', 'status', 'state', 'created', 'created_by'))
-                        ->values((int) $player->id . ', ' . $gameId . ', ' . $status . ', 1, ' . $db->quote($now) . ', ' . (int) $user->id);
+                        ->values((int) $player->id . ', ' . $gameId . ', ' . $sqlStatus . ', 1, ' . $db->quote($now) . ', ' . (int) $user->id);
                     $db->setQuery($query);
                     $db->execute();
                 }

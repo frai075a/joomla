@@ -35,3 +35,23 @@ Joomla 5 MVC component ("Spielplanung" — team roster and match-availability ma
 - `tests/regression.php` is a standalone PHP script (not PHPUnit) — run with `php -d extension=pdo_sqlite tests/regression.php`. It declares double/fake versions of the Joomla classes it needs (`Factory`, `BaseController`, `AdminController`, `HtmlView`, `Text`, `HTMLHelper`, `Route`, a minimal query builder, mailer double) in their real namespaces, then `require`s the actual component source files so production code runs unmodified against an in-memory SQLite database.
 - When you add or change a model/controller/view, check whether it's in the `require` list near the top of the `namespace {}` block and add it if it now has behavior worth covering — the existing coverage spans Saisonplanung (both sides), Mmb, CaptainNotificationService, Spielplan, Saisonplanungmf, Kategorien, and `script.php`.
 - The mailer double supports forcing a failure mode (`Factory::$mailFailure = 'throw'|'false'`) specifically to exercise CaptainNotificationService's warning path without a real SMTP server.
+
+## Backend entry maintenance (1.5.0)
+
+- `eintraege` lists every `#__ttc_spielplanung` record with pagination, player and match names, and audit metadata in row tooltips. LEFT JOINs preserve orphaned records.
+- `eintraege.remove` and `eintraege.removeAll` are POST actions protected by CSRF tokens. Models require both `core.manage` and `core.delete`. They delete availability records only; users, games and roster tables remain untouched. No notification mail is sent.
+- The delete-all action applies to the entire availability table, regardless of the current page; the UI explicitly confirms this scope.
+
+- Since 1.5.2, `eintraege` offers an exact player-ID dropdown (including orphaned users) and allowlisted player/match/date sorting in both directions. Filter/sort selections use component model state, are part of the list cache key and are carried in pagination submissions. Applying selections resets pagination. Delete-all still affects the entire table.
+
+## Three-state availability (1.6.0)
+
+- Both editing dialogs use `site/tmpl/status.php`: Absage (0), Neutral (SQL NULL, center), Zusage (1). Missing availability defaults to neutral. Existing 0/1 rows are preserved on upgrade.
+- HTTP submits the explicit token `neutral`; controllers map only that token to PHP null. Missing fields remain invalid. Models accept null, 0/1 and their string representations. SQL uses unquoted NULL, and change detection keeps NULL distinct from 0. Neutral to neutral sends no mail; personal changes to/from neutral do. Captain edits still never send mail.
+- Install SQL and 1.6.0 migration set status nullable with DEFAULT NULL. postflight also repairs the definition when needed. Only status=1 contributes to confirmed-player lists.
+
+## Season initialization (1.7.0)
+
+- Neutral availability is labelled `offen`; HTTP token and SQL NULL semantics are unchanged.
+- `saisoninitialisieren` checks for exactly December 31 of the current year in `#__ttc_hinrueckgrenze`. The year follows the Joomla site timezone and is recomputed on POST. The button label is `Saison YYYY/YYYY+1` and disappears when the row exists.
+- The initialize action requires CSRF, core.manage and core.create. It only inserts the date into the externally owned table; no table creation, deletion or schema ownership is added. Prior dates remain unchanged. A MySQL advisory lock serializes requests from this dialog, with a fresh existence check under the lock.

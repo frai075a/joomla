@@ -40,6 +40,8 @@ namespace Joomla\CMS\MVC\Controller {
         public function setRedirect($url) { $this->redirectUrl = $url; }
         public function setMessage($message) {}
         public function getModel($name) {
+            if ($name === 'Saisoninitialisieren') { return new \Ttc\Component\Spielplanung\Administrator\Model\SaisoninitialisierenModel(); }
+            if ($name === 'Eintraege') { return new \Ttc\Component\Spielplanung\Administrator\Model\EintraegeModel(); }
             if ($name === 'Saisonplanungmf') { return new \Ttc\Component\Spielplanung\Site\Model\SaisonplanungmfModel(); }
             if ($name === 'Mmb') { return new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel(); }
             return $name === 'Spielplan'
@@ -218,6 +220,7 @@ namespace {
             public $messages = array();
             public $redirects = array();
             public function getIdentity() { return Factory::$user; }
+            public function get($key, $default = null) { return $default; }
             public function getSession() { return Factory::createTestSession(); }
             public function redirect($url) { $this->redirects[] = $url; }
             public function __construct() { $this->input = new Input(); }
@@ -326,7 +329,7 @@ namespace {
     });
     test('MF invalid statuses and failed writes do not partially save', function() {
         $model = mfFixture();
-        foreach (array(null, 'yes', 2, true, array(1)) as $status) {
+        foreach (array('yes', 2, true, array(1)) as $status) {
             check($model->saveGames(array(102 => $status)) === false);
         }
         Factory::$db->failAt = 1;
@@ -389,7 +392,7 @@ namespace {
         check(Factory::$db->writes === 0);
     });
     test('Invalid statuses are never coerced to zero or one', function() {
-        foreach (array(-1, 2, 'yes', '1x', '', null, true, array(1), 1.0) as $status) {
+        foreach (array(-1, 2, 'yes', '1x', '', true, array(1), 1.0) as $status) {
             check((new SpielplanModel())->saveGames(array(101 => $status)) === false);
         }
         check(Factory::$db->writes === 0);
@@ -469,13 +472,18 @@ namespace {
         public $columns = array();
         public $writes = 0;
         public $fail = false;
-        public function getTableColumns($table, $types) { return $this->columns; }
+        public $statusColumn;
+        public function getTableColumns($table, $types) {
+            return $table === '#__ttc_spielplanung' ? ['status' => $this->statusColumn ?? (object) ['Null' => 'YES', 'Default' => null]] : $this->columns;
+        }
         public function quoteName($name) { return $name; }
-        public function setQuery($sql) {}
+        public $query;
+        public function setQuery($sql) { $this->query = $sql; }
         public function execute() {
             if ($this->fail) { throw new \RuntimeException('Schema write failed'); }
             $this->writes++;
             $this->columns['is_captain'] = true;
+            $this->statusColumn = (object) ['Null' => 'YES', 'Default' => null];
         }
     }
     test('Installer repairs missing captain column and is repeatable', function() {
@@ -756,5 +764,410 @@ namespace {
         }
     });
 
-    echo "All 54 regression tests passed.\n";
+
+    require __DIR__ . '/../administrator/src/Model/EintraegeModel.php';
+    require __DIR__ . '/../administrator/src/Controller/EintraegeController.php';
+    require __DIR__ . '/../administrator/src/View/Eintraege/HtmlView.php';
+
+    function entriesFixture() {
+        Factory::$db->pdo->exec("ALTER TABLE ttc_spielplan ADD COLUMN h_nummer TEXT;
+            ALTER TABLE ttc_spielplan ADD COLUMN a_nummer TEXT;
+            UPDATE ttc_spielplan SET h_nummer='II', a_nummer='IV'");
+        Factory::$db->pdo->exec("INSERT INTO ttc_spielplanung
+            (id,user_id,game_id,status,state,created,created_by,modified,modified_by) VALUES
+            (1,7,101,1,1,'2026-09-29 12:00:00',7,NULL,0),
+            (2,999,999,0,0,'2026-09-29 12:00:00',999,'2026-09-30 13:00:00',7)");
+        return new \Ttc\Component\Spielplanung\Administrator\Model\EintraegeModel();
+    }
+    test('Entry list includes orphaned and inactive records with readable joins', function() {
+        entriesFixture();
+        $model = new class extends \Ttc\Component\Spielplanung\Administrator\Model\EintraegeModel {
+            public function queryForTest() { return $this->getListQuery(); }
+        };
+        Factory::$db->setQuery($model->queryForTest());
+        $rows = Factory::$db->loadAssocList('id');
+        check(array_keys($rows) === [2, 1]);
+        check($rows[1]['player_name'] === 'Player' && $rows[1]['creator_name'] === 'Player');
+        check($rows[1]['heimmannschaft'] === 'TTC Nordend Frankfurt');
+        check($rows[2]['player_name'] === null && $rows[2]['modifier_name'] === 'Player');
+    });
+    test('Single entry deletion preserves other availability and source tables', function() {
+        $model = entriesFixture();
+        $model->removeEntry('1');
+        check(countAvailability() === 1);
+        check((int) Factory::$db->pdo->query('SELECT id FROM ttc_spielplanung')->fetchColumn() === 2);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_spielplan')->fetchColumn() === 2);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_mmb')->fetchColumn() === 1);
+    });
+    test('Invalid entry IDs cannot delete data', function() {
+        $model = entriesFixture();
+        foreach ([null, 0, -1, '1 OR 1=1', [], '1.5', true] as $id) {
+            rejects(function() use ($model, $id) { $model->removeEntry($id); });
+        }
+        check(countAvailability() === 2 && Factory::$db->writes === 0);
+    });
+    test('Delete all clears only availability including orphaned rows', function() {
+        $model = entriesFixture();
+        $model->removeAllEntries();
+        check(countAvailability() === 0);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_spielplan')->fetchColumn() === 2);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() === 1);
+        $model->removeAllEntries();
+        check(countAvailability() === 0);
+    });
+    test('Deletion requires both manage and delete permissions', function() {
+        $model = entriesFixture();
+        foreach (['core.manage', 'core.delete'] as $denied) {
+            Factory::$user = new class($denied) {
+                public function __construct(private $denied) {}
+                public function authorise($action, $asset) { return $action !== $this->denied; }
+            };
+            rejects(function() use ($model) { $model->removeEntry(1); });
+            rejects(function() use ($model) { $model->removeAllEntries(); });
+        }
+        check(countAvailability() === 2 && Factory::$db->writes === 0);
+    });
+    test('Both delete controller actions require a valid token', function() {
+        entriesFixture();
+        Factory::$app->tokenValid = false;
+        $controller = new \Ttc\Component\Spielplanung\Administrator\Controller\EintraegeController();
+        rejects(function() use ($controller) { $controller->remove(); });
+        rejects(function() use ($controller) { $controller->removeAll(); });
+        check(Factory::$db->writes === 0 && countAvailability() === 2);
+    });
+    test('Delete controller distinguishes single deletion and delete all', function() {
+        entriesFixture();
+        $controller = new \Ttc\Component\Spielplanung\Administrator\Controller\EintraegeController();
+        Factory::$app->input->data = ['entry_id' => '1'];
+        $controller->remove();
+        check(countAvailability() === 1);
+        check($controller->redirectUrl === 'index.php?option=com_ttc_spielplanung&view=eintraege');
+        $controller->removeAll();
+        check(countAvailability() === 0);
+    });
+    test('Delete failure keeps records and reports an error', function() {
+        entriesFixture();
+        Factory::$db->failAt = 1;
+        $controller = new \Ttc\Component\Spielplanung\Administrator\Controller\EintraegeController();
+        $controller->removeAll();
+        check(countAvailability() === 2 && Factory::$app->messages === ['error']);
+    });
+
+
+    test('Entry template escapes names and tooltips and hides unauthorized deletion', function() {
+        entriesFixture();
+        Factory::$db->pdo->exec("UPDATE users SET name='<script>alert(1)</script>' WHERE id=7");
+        $model = new class extends \Ttc\Component\Spielplanung\Administrator\Model\EintraegeModel {
+            public function queryForTest() { return $this->getListQuery(); }
+        };
+        Factory::$db->setQuery($model->queryForTest());
+        $view = new class {
+            public $items;
+            public $pagination;
+            public $canDelete = true;
+            public $players = [];
+            public $playerId = 0;
+            public $sort = 'player';
+            public $direction = 'ASC';
+            public function getDocument() {
+                return new class {
+                    public function getWebAssetManager() {
+                        return new class { public function useScript($name) {} };
+                    }
+                };
+            }
+            public function render() {
+                ob_start();
+                require __DIR__ . '/../administrator/tmpl/eintraege/default.php';
+                return ob_get_clean();
+            }
+        };
+        $view->items = array_map(static function($row) { return (object) $row; }, Factory::$db->loadAssocList());
+        $view->pagination = new class { public function getListFooter() { return '<div>Pagination</div>'; } };
+        $html = $view->render();
+        check(strpos($html, '<script>') === false && strpos($html, '&lt;script&gt;') !== false);
+        check(strpos($html, 'TTC Nordend Frankfurt II - Guest IV') !== false);
+        check(strpos($html, '<tr title="') !== false && strpos($html, 'COM_TTC_SPIELPLANUNG_CREATED_BY') !== false);
+        check(strpos($html, '2026-09-30 13:00:00') !== false);
+        check(strpos($html, 'value="eintraege.removeAll"') !== false);
+        check(strpos($html, 'value="eintraege.remove"') !== false);
+        $view->canDelete = false;
+        $html = $view->render();
+        check(strpos($html, 'value="eintraege.remove') === false);
+        check(strpos($html, 'TTC Nordend Frankfurt II - Guest IV') !== false);
+    });
+    test('Entry view rejects users without backend access before loading data', function() {
+        Factory::$user->allowed = false;
+        $view = new \Ttc\Component\Spielplanung\Administrator\View\Eintraege\HtmlView();
+        rejects(function() use ($view) { $view->display(); });
+        check(!$view->rendered);
+    });
+
+
+    function entryQueryModel() {
+        return new class extends \Ttc\Component\Spielplanung\Administrator\Model\EintraegeModel {
+            public function queryForTest() { return $this->getListQuery(); }
+        };
+    }
+    function entryIds($model) {
+        Factory::$db->setQuery($model->queryForTest());
+        return array_keys(Factory::$db->loadAssocList('id'));
+    }
+    test('Entries sort by player, full match and date in both directions', function() {
+        entriesFixture();
+        Factory::$db->pdo->exec("INSERT INTO users (id,name) VALUES (999,'Alpha');
+            INSERT INTO ttc_spielplan (id,heimmannschaft,h_nummer,auswaertsmannschaft,a_nummer,datum)
+                VALUES (999,'TTC Nordend Frankfurt','I','Guest','IV','2026-11-01')");
+        $model = entryQueryModel();
+        foreach (['player' => [2,1], 'match' => [2,1], 'date' => [1,2]] as $sort => $expected) {
+            $model->state = ['filter.sort' => $sort, 'filter.direction' => 'ASC'];
+            check(entryIds($model) === $expected, 'Ascending ' . $sort);
+            $model->state['filter.direction'] = 'DESC';
+            check(entryIds($model) === array_reverse($expected), 'Descending ' . $sort);
+        }
+    });
+    test('Player filter matches exact IDs including deleted users and can be cleared', function() {
+        entriesFixture();
+        $model = entryQueryModel();
+        $model->state['filter.player_id'] = 7;
+        check(entryIds($model) === [1]);
+        $model->state['filter.player_id'] = 999;
+        check(entryIds($model) === [2]);
+        $model->state['filter.player_id'] = 123;
+        check(entryIds($model) === []);
+        $model->state['filter.player_id'] = 0;
+        check(entryIds($model) === [2,1]);
+    });
+    test('Player options are distinct and independent of active filter', function() {
+        entriesFixture();
+        Factory::$db->pdo->exec("INSERT INTO ttc_spielplanung (id,user_id,game_id) VALUES (3,7,102)");
+        $model = entryQueryModel();
+        $model->state['filter.player_id'] = 7;
+        $players = $model->getPlayers();
+        check(count($players) === 2);
+        check(array_column($players, 'user_id') === [999,7]);
+        check($players[1]['player_name'] === 'Player');
+    });
+    test('Untrusted sorting input cannot become SQL', function() {
+        entriesFixture();
+        $model = entryQueryModel();
+        $model->state = ['filter.sort' => 'p.id; DELETE FROM users', 'filter.direction' => 'DESC; DELETE FROM users'];
+        check(entryIds($model) === [2,1]);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM users')->fetchColumn() === 1);
+    });
+
+
+    test('Neutral inserts and updates use SQL NULL and preserve existing responses', function() {
+        $model = new SpielplanModel();
+        check($model->getGames(false)[0]['status'] === null);
+        check($model->saveGames([101 => null]) === []);
+        check(countAvailability() === 1);
+        check(Factory::$db->pdo->query('SELECT status FROM ttc_spielplanung')->fetchColumn() === null);
+        foreach ([1, 0] as $answer) {
+            $changes = $model->saveGames([101 => $answer]);
+            check(count($changes) === 1 && $changes[0]['old_status'] === null);
+            check($model->getGames(false)[0]['status'] === $answer);
+            $changes = $model->saveGames([101 => null]);
+            check(count($changes) === 1 && $changes[0]['new_status'] === null);
+            check(Factory::$db->pdo->query('SELECT status FROM ttc_spielplanung')->fetchColumn() === null);
+            check($model->saveGames([101 => null]) === []);
+        }
+    });
+    test('Frontend maps explicit neutral to NULL but still rejects a missing field', function() {
+        $controller = new \Ttc\Component\Spielplanung\Site\Controller\DisplayController();
+        Factory::$app->input->data = ['game_ids' => [101], 'status_101' => 'neutral'];
+        $controller->saveGame();
+        check(countAvailability() === 1);
+        check(Factory::$db->pdo->query('SELECT status FROM ttc_spielplanung')->fetchColumn() === null);
+        $writes = Factory::$db->writes;
+        Factory::$app->input->data = ['game_ids' => [101]];
+        $controller->saveGame();
+        check(Factory::$db->writes === $writes && in_array('error', Factory::$app->messages, true));
+    });
+    test('Captain neutral keeps selected player and actor and sends no mail', function() {
+        mfFixture();
+        $controller = new \Ttc\Component\Spielplanung\Site\Controller\SaisonplanungmfController();
+        Factory::$app->input->data = ['player_id' => 9, 'game_ids' => [102], 'status_102' => 'neutral'];
+        $controller->saveGame();
+        $row = Factory::$db->pdo->query('SELECT * FROM ttc_spielplanung')->fetchObject();
+        check($row->status === null && (int) $row->user_id === 9 && (int) $row->created_by === 7);
+        check(count(Factory::$sent) === 0);
+    });
+    test('Neutral is excluded from confirmed players', function() {
+        $model = new SpielplanModel();
+        $model->saveGames([101 => 1]);
+        $repository = new \Ttc\Component\Spielplanung\Administrator\Repository\SpielplanungRepository(Factory::$db);
+        check($repository->getConfirmedPlayers([101])[101] === ['Player']);
+        $model->saveGames([101 => null]);
+        check($repository->getConfirmedPlayers([101]) === []);
+    });
+    test('Mail distinguishes neutral transitions and repeated neutral is silent', function() {
+        Factory::$db->pdo->exec('UPDATE ttc_mmb SET is_captain=1');
+        $model = new SpielplanModel();
+        $model->saveAndNotify([101 => null]);
+        check(count(Factory::$sent) === 0);
+        $model->saveAndNotify([101 => 1]);
+        check(count(Factory::$sent) === 1);
+        check(strpos(Factory::$sent[0]->body, 'COM_TTC_SPIELPLANUNG_STATUS_NEUTRAL -> COM_TTC_SPIELPLANUNG_STATUS_YES') !== false);
+        $model->saveAndNotify([101 => null]);
+        check(count(Factory::$sent) === 2);
+        check(strpos(Factory::$sent[1]->body, 'COM_TTC_SPIELPLANUNG_STATUS_YES -> COM_TTC_SPIELPLANUNG_STATUS_NEUTRAL') !== false);
+        $model->saveAndNotify([101 => null]);
+        check(count(Factory::$sent) === 2);
+    });
+    test('Status switch has neutral in the middle and exactly one checked option', function() {
+        foreach ([[null, 'neutral'], [0, '0'], [1, '1']] as [$status, $expected]) {
+            $game = ['game_id' => 101, 'status' => $status];
+            ob_start();
+            require __DIR__ . '/../site/tmpl/status.php';
+            $html = ob_get_clean();
+            preg_match_all('/<input[^>]+>/', $html, $inputs);
+            check(count($inputs[0]) === 3);
+            $checked = array_values(array_filter($inputs[0], static function($input) { return strpos($input, ' checked') !== false; }));
+            check(count($checked) === 1 && strpos($checked[0], 'value="' . $expected . '"') !== false);
+            check(strpos($inputs[0][0], 'value="0"') !== false);
+            check(strpos($inputs[0][1], 'value="neutral"') !== false);
+            check(strpos($inputs[0][2], 'value="1"') !== false);
+        }
+    });
+    test('Installer repairs nullable status and default once', function() {
+        Factory::$db = new SchemaDatabase();
+        Factory::$db->columns['is_captain'] = true;
+        Factory::$db->statusColumn = (object) ['Null' => 'NO', 'Default' => '1'];
+        $installer = new \com_ttc_spielplanungInstallerScript();
+        $installer->postflight('update', null);
+        check(Factory::$db->writes === 1);
+        check(strpos(Factory::$db->query, 'MODIFY COLUMN status TINYINT(3) NULL DEFAULT NULL') !== false);
+        $installer->postflight('update', null);
+        check(Factory::$db->writes === 1);
+    });
+    test('Installer surfaces nullable status migration failures', function() {
+        Factory::$db = new SchemaDatabase();
+        Factory::$db->columns['is_captain'] = true;
+        Factory::$db->statusColumn = (object) ['Null' => 'NO', 'Default' => '1'];
+        Factory::$db->fail = true;
+        rejects(function() { (new \com_ttc_spielplanungInstallerScript())->postflight('update', null); });
+    });
+
+
+    require __DIR__ . '/../administrator/src/Model/SaisoninitialisierenModel.php';
+    require __DIR__ . '/../administrator/src/Controller/SaisoninitialisierenController.php';
+    require __DIR__ . '/../administrator/src/View/Saisoninitialisieren/HtmlView.php';
+
+    function seasonFixture() {
+        $locks = (object) ['available' => true, 'held' => false, 'released' => 0];
+        Factory::$db->pdo->sqliteCreateFunction('GET_LOCK', static function($name, $timeout) use ($locks) {
+            if (!$locks->available) { return 0; }
+            $locks->held = true;
+            return 1;
+        }, 2);
+        Factory::$db->pdo->sqliteCreateFunction('RELEASE_LOCK', static function($name) use ($locks) {
+            $locks->held = false;
+            $locks->released++;
+            return 1;
+        }, 1);
+        $model = new class extends \Ttc\Component\Spielplanung\Administrator\Model\SaisoninitialisierenModel {
+            public $now = '2026-10-02 12:00:00';
+            protected function getNow(): \DateTimeImmutable {
+                return new \DateTimeImmutable($this->now, new \DateTimeZone('Europe/Berlin'));
+            }
+        };
+        return [$model, $locks];
+    }
+    test('Season lookup checks exact December 31 of the current year', function() {
+        [$model] = seasonFixture();
+        Factory::$db->pdo->exec("INSERT INTO ttc_hinrueckgrenze VALUES ('2025-12-31'), ('2027-12-31')");
+        check($model->getSeason() === ['year'=>2026, 'nextYear'=>2027, 'date'=>'2026-12-31', 'exists'=>false]);
+        check(Factory::$db->writes === 0);
+        Factory::$db->pdo->exec("INSERT INTO ttc_hinrueckgrenze VALUES ('2026-12-31')");
+        check($model->getSeason()['exists'] === true);
+    });
+    test('Season initialization is repeatable and preserves previous dates', function() {
+        [$model, $locks] = seasonFixture();
+        check($model->initialize() === true);
+        check($model->initialize() === false);
+        $dates = Factory::$db->pdo->query('SELECT datum FROM ttc_hinrueckgrenze ORDER BY datum')->fetchAll(\PDO::FETCH_COLUMN);
+        check($dates === ['2026-01-01', '2026-10-01', '2026-12-31']);
+        check($locks->released === 2 && !$locks->held);
+        check(Factory::$db->writes === 1 && countAvailability() === 0);
+    });
+    test('Season year is recomputed on save after New Year', function() {
+        [$model] = seasonFixture();
+        $model->now = '2026-12-31 23:59:59';
+        check($model->getSeason()['year'] === 2026);
+        $model->now = '2027-01-01 00:00:00';
+        check($model->initialize());
+        check($model->getSeason()['nextYear'] === 2028);
+        check(Factory::$db->pdo->query("SELECT COUNT(*) FROM ttc_hinrueckgrenze WHERE datum='2027-12-31'")->fetchColumn() === 1);
+        check(Factory::$db->pdo->query("SELECT COUNT(*) FROM ttc_hinrueckgrenze WHERE datum='2026-12-31'")->fetchColumn() === 0);
+    });
+    test('Season initialization requires manage and create permissions', function() {
+        [$model] = seasonFixture();
+        foreach (['core.manage', 'core.create'] as $denied) {
+            Factory::$user = new class($denied) {
+                public function __construct(private $denied) {}
+                public function authorise($action, $asset) { return $action !== $this->denied; }
+            };
+            rejects(function() use ($model) { $model->initialize(); });
+        }
+        check(Factory::$db->writes === 0);
+    });
+    test('Season controller requires CSRF token before writing', function() {
+        seasonFixture();
+        Factory::$app->tokenValid = false;
+        rejects(function() { (new \Ttc\Component\Spielplanung\Administrator\Controller\SaisoninitialisierenController())->initialize(); });
+        check(Factory::$db->writes === 0);
+    });
+    test('Season controller ignores client-supplied year and redirects after saving', function() {
+        seasonFixture();
+        $expected = (new \Ttc\Component\Spielplanung\Administrator\Model\SaisoninitialisierenModel())->getSeason()['date'];
+        Factory::$app->input->data = ['year'=>1900, 'datum'=>'1900-12-31'];
+        $controller = new \Ttc\Component\Spielplanung\Administrator\Controller\SaisoninitialisierenController();
+        $controller->initialize();
+        check(Factory::$db->pdo->query("SELECT COUNT(*) FROM ttc_hinrueckgrenze WHERE datum=" . Factory::$db->quote($expected))->fetchColumn() === 1);
+        check($controller->redirectUrl === 'index.php?option=com_ttc_spielplanung&view=saisoninitialisieren');
+        check(Factory::$app->messages === ['message']);
+    });
+    test('Failed season insert releases lock and reports error', function() {
+        [, $locks] = seasonFixture();
+        Factory::$db->failAt = 1;
+        (new \Ttc\Component\Spielplanung\Administrator\Controller\SaisoninitialisierenController())->initialize();
+        check(Factory::$app->messages === ['error']);
+        check(!$locks->held && $locks->released === 1);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_hinrueckgrenze')->fetchColumn() === 2);
+    });
+    test('Busy initialization lock cannot write a duplicate', function() {
+        [$model, $locks] = seasonFixture();
+        $locks->available = false;
+        rejects(function() use ($model) { $model->initialize(); });
+        check(Factory::$db->writes === 0);
+    });
+    test('Season view denies backend access before loading data', function() {
+        Factory::$user->allowed = false;
+        $view = new \Ttc\Component\Spielplanung\Administrator\View\Saisoninitialisieren\HtmlView();
+        rejects(function() use ($view) { $view->display(); });
+        check(!$view->rendered);
+    });
+    test('Season button is shown only for a missing date and allowed user', function() {
+        $view = new class {
+            public $season = ['year'=>2026, 'nextYear'=>2027, 'exists'=>false];
+            public $canCreate = true;
+            public function render() {
+                ob_start();
+                require __DIR__ . '/../administrator/tmpl/saisoninitialisieren/default.php';
+                return ob_get_clean();
+            }
+        };
+        $html = $view->render();
+        check(strpos($html, 'saisoninitialisieren.initialize') !== false);
+        check(strpos($html, '2026 | 2027') !== false);
+        check(strpos($html, '31.12.2026') !== false);
+        $view->season['exists'] = true;
+        check(strpos($view->render(), '<button') === false);
+        $view->season['exists'] = false;
+        $view->canCreate = false;
+        check(strpos($view->render(), '<button') === false);
+    });
+
+    echo "All 86 regression tests passed.\n";
 }

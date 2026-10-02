@@ -7,7 +7,7 @@
     <author>Thorsten Austen</author>
     <authorEmail>thorsten.austen@gmail.com</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>1.4.2</version>
+    <version>1.7.0</version>
     <description>Saisonverwaltung- Diese Komponente beinhaltet Pflegedialoge, um Spieler zu einem Mannschaftsmeldebogen zuzuordnen und darauf basierende eine Saisonplanung (Zu- und Absagen einzelner Mannschaftsmitglieder) zu verwalten. </description>
     <namespace path="src">Ttc\Component\Spielplanung</namespace>
 
@@ -46,6 +46,8 @@
             <menu link="option=com_ttc_spielplanung&amp;view=kategorien" view="kategorien" alt="Spielplanung/Kategorien">COM_TTC_SPIELPLANUNG_TITLE_KATEGORIEN</menu>
             <menu link="option=com_ttc_spielplanung&amp;view=mmb" view="mmb" alt="Spielplanung/MMB">COM_TTC_SPIELPLANUNG_TITLE_MMB</menu>
             <menu link="option=com_ttc_spielplanung&amp;view=saisonplanung" view="saisonplanung" alt="Spielplanung/Saisonplanung">COM_TTC_SPIELPLANUNG_TITLE_SAISONPLANUNG</menu>
+        <menu link="option=com_ttc_spielplanung&amp;view=eintraege" view="eintraege" alt="Spielplanung/Einträge">COM_TTC_SPIELPLANUNG_TITLE_EINTRAEGE</menu>
+            <menu link="option=com_ttc_spielplanung&amp;view=saisoninitialisieren" view="saisoninitialisieren" alt="Spielplanung/Saison initialisieren">COM_TTC_SPIELPLANUNG_TITLE_SAISONINITIALISIEREN</menu>
         </submenu>
         <files folder="administrator">
             <filename>access.xml</filename>

@@ -38,7 +38,8 @@ class DisplayController extends BaseController
             }
 
             // Keep the original value: coercion would turn malformed input into a valid status.
-            $statuses[(int) $gameId] = $app->input->post->get('status_' . $gameId, null, 'raw');
+            $value = $app->input->post->get('status_' . $gameId, '', 'raw');
+            $statuses[(int) $gameId] = $value === 'neutral' ? null : $value;
         }
 
         $model = $this->getModel('Spielplan');
