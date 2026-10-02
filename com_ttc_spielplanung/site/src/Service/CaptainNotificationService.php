@@ -61,8 +61,8 @@ class CaptainNotificationService
                 $change['gegner'],
                 $change['sporthalle']
             );
-            $oldLabel = Text::_($change['old_status'] == 1 ? 'COM_TTC_SPIELPLANUNG_STATUS_YES' : 'COM_TTC_SPIELPLANUNG_STATUS_NO');
-            $newLabel = Text::_($change['new_status'] == 1 ? 'COM_TTC_SPIELPLANUNG_STATUS_YES' : 'COM_TTC_SPIELPLANUNG_STATUS_NO');
+            $oldLabel = Text::_($change['old_status'] === null ? 'COM_TTC_SPIELPLANUNG_STATUS_NEUTRAL' : ($change['old_status'] == 1 ? 'COM_TTC_SPIELPLANUNG_STATUS_YES' : 'COM_TTC_SPIELPLANUNG_STATUS_NO'));
+            $newLabel = Text::_($change['new_status'] === null ? 'COM_TTC_SPIELPLANUNG_STATUS_NEUTRAL' : ($change['new_status'] == 1 ? 'COM_TTC_SPIELPLANUNG_STATUS_YES' : 'COM_TTC_SPIELPLANUNG_STATUS_NO'));
 
             $lines[] = '- ' . $gameLabel . ': ' . $oldLabel . ' -> ' . $newLabel;
         }

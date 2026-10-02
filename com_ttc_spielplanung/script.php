@@ -27,6 +27,15 @@ class com_ttc_spielplanungInstallerScript
             $db->execute();
         }
 
+        // Repair the nullable status definition even after an interrupted upgrade.
+        $statusColumns = $db->getTableColumns('#__ttc_spielplanung', false);
+        $status = $statusColumns['status'];
+        if (strtoupper((string) $status->Null) !== 'YES' || $status->Default !== null) {
+            $db->setQuery('ALTER TABLE ' . $db->quoteName('#__ttc_spielplanung')
+                . ' MODIFY COLUMN ' . $db->quoteName('status') . ' TINYINT(3) NULL DEFAULT NULL');
+            $db->execute();
+        }
+
         return true;
     }
 }
