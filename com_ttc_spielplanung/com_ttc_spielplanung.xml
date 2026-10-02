@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="5.0" method="upgrade">
+    <name>com_ttc_spielplanung</name>
+    <creationDate>2026-10-02</creationDate>
+    <copyright>2026 Thorsten Austen</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Thorsten Austen</author>
+    <authorEmail>thorsten.austen@gmail.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>1.4.2</version>
+    <description>Saisonverwaltung- Diese Komponente beinhaltet Pflegedialoge, um Spieler zu einem Mannschaftsmeldebogen zuzuordnen und darauf basierende eine Saisonplanung (Zu- und Absagen einzelner Mannschaftsmitglieder) zu verwalten. </description>
+    <namespace path="src">Ttc\Component\Spielplanung</namespace>
+
+    <scriptfile>script.php</scriptfile>
+
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates</schemapath>
+        </schemas>
+    </update>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+
+    <files folder="site">
+        <folder>src</folder>
+        <folder>forms</folder>
+        <folder>tmpl</folder>
+        <folder>services</folder>
+    </files>
+    <languages folder="site/language">
+        <language tag="en-GB">en-GB/com_ttc_spielplanung.ini</language>
+        <language tag="en-GB">en-GB/com_ttc_spielplanung.sys.ini</language>
+    </languages>
+
+    <administration>
+        <menu>COM_TTC_SPIELPLANUNG</menu>
+        <submenu>
+            <menu link="option=com_ttc_spielplanung&amp;view=kategorien" view="kategorien" alt="Spielplanung/Kategorien">COM_TTC_SPIELPLANUNG_TITLE_KATEGORIEN</menu>
+            <menu link="option=com_ttc_spielplanung&amp;view=mmb" view="mmb" alt="Spielplanung/MMB">COM_TTC_SPIELPLANUNG_TITLE_MMB</menu>
+            <menu link="option=com_ttc_spielplanung&amp;view=saisonplanung" view="saisonplanung" alt="Spielplanung/Saisonplanung">COM_TTC_SPIELPLANUNG_TITLE_SAISONPLANUNG</menu>
+        </submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>sql</folder>
+        </files>
+        <languages folder="administrator/languages">
+            <language tag="en-GB">en-GB/com_ttc_spielplanung.ini</language>
+            <language tag="en-GB">en-GB/com_ttc_spielplanung.sys.ini</language>
+        </languages>
+    </administration>
+
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
