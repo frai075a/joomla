@@ -1,0 +1,118 @@
+<?php
+defined('_JEXEC') or die;
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
+
+$user = Factory::getApplication()->getIdentity();
+?>
+
+<style>
+    .com-ttc-spielplanung-status-switch {
+        display: inline-grid;
+        grid-template-columns: repeat(3, auto);
+        position: relative;
+        padding: 0;
+        margin: 0;
+        border: 1px solid #6c757d;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .com-ttc-spielplanung-status-switch input {
+        position: absolute;
+        opacity: 0;
+        width: 1px;
+        height: 1px;
+    }
+    .com-ttc-spielplanung-status-switch label {
+        padding: 0.45rem 0.65rem;
+        cursor: pointer;
+        margin: 0;
+        background: #fff;
+        color: #212529;
+    }
+    .com-ttc-spielplanung-status-switch input:checked + label {
+        background: #495057;
+        color: #fff;
+        font-weight: 700;
+    }
+    .com-ttc-spielplanung-status-switch input[value="0"]:checked + label { background: #b02a37; }
+    .com-ttc-spielplanung-status-switch input[value="1"]:checked + label { background: #146c43; }
+    .com-ttc-spielplanung-status-switch input:focus-visible + label { outline: 3px solid #0d6efd; outline-offset: -3px; }
+    .com-ttc-spielplanung-filter-box {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem 2rem;
+        align-items: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="com-ttc-spielplanung-frontend">
+    <h1><?php echo Text::_('COM_TTC_SPIELPLANUNG_TITLE_SPIELPLAN'); ?></h1>
+
+    <form action="<?php echo Route::_('index.php?option=com_ttc_spielplanung'); ?>" method="get" name="spielplanFilterForm" id="spielplanFilterForm" class="com-ttc-spielplanung-filter-box">
+        <input type="hidden" name="option" value="com_ttc_spielplanung" />
+        <input type="hidden" name="only_future_submitted" value="1" />
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="only_future" name="only_future" value="1" <?php echo $this->onlyFuture ? 'checked="checked"' : ''; ?> onchange="this.form.submit();" />
+            <label class="form-check-label" for="only_future">
+                <?php echo Text::_('COM_TTC_SPIELPLANUNG_FILTER_ONLY_FUTURE'); ?>
+            </label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="vorrunde" name="vorrunde" value="1" <?php echo $this->vorrundeOnly ? 'checked="checked"' : ''; ?> onchange="this.form.submit();" />
+            <label class="form-check-label" for="vorrunde">
+                <?php echo Text::_('COM_TTC_SPIELPLANUNG_FILTER_VORRUNDE'); ?>
+            </label>
+        </div>
+    </form>
+
+    <?php if ($this->games) : ?>
+        <form action="<?php echo Route::_('index.php?option=com_ttc_spielplanung&task=display.saveGame'); ?>" method="post" name="spielplanForm" id="spielplanForm">
+
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_STATUS'); ?></th>
+                            <th><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_SPIELDATUM'); ?></th>
+                            <th><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_GEGNER'); ?></th>
+                            <th><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_SPORTHALLE'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($this->games as $game) : ?>
+                            <tr>
+                                <td>
+                                    <?php require __DIR__ . '/../status.php'; ?>
+                                    <input type="hidden" name="game_ids[]" value="<?php echo (int) $game['game_id']; ?>" />
+                                </td>
+                                <td><?php echo HTMLHelper::_('date', $game['spieldatum'] . ' ' . $game['uhrzeit'], 'd.m.Y H:i'); ?></td>
+                                <td><?php echo htmlspecialchars($game['gegner'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                <td><?php echo htmlspecialchars($game['sporthalle'], ENT_QUOTES, 'UTF-8'); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit" name="task" value="display.saveGame" class="btn btn-primary">
+                <?php echo Text::_('JSAVE'); ?>
+            </button>
+            <?php echo HTMLHelper::_('form.token'); ?>
+        </form>
+    <?php else : ?>
+        <div class="alert alert-info">
+            <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
+        </div>
+    <?php endif; ?>
+</div>
+
+

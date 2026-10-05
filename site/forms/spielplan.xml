@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fieldset name="request">
+        <field name="view" type="hidden" default="spielplan" />
+        <field name="layout" type="hidden" default="default" />
+    </fieldset>
+</form>
