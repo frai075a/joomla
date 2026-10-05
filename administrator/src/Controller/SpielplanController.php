@@ -1,0 +1,26 @@
+<?php
+/**
+ * @version    CVS: 1.0.6
+ * @package    Com_Spielplan
+ * @author     Thorsten Austen <thorsten.austen@gmail.com>
+ * @copyright  2024 Thorsten Austen
+ * @license    GNU General Public License version 2 or later; see LICENSE.txt
+ */
+
+namespace Ttc\Component\Spielplanung\Administrator\Controller;
+
+\defined('_JEXEC') or die;
+
+use Joomla\CMS\MVC\Controller\FormController;
+
+/**
+ * Spielplan controller class.
+ *
+ * @since  1.0.6
+ */
+class SpielplanController extends FormController
+{
+    protected $option = 'com_ttc_spielplanung';
+    protected $text_prefix = 'COM_TTC_SPIELPLANUNG_SPIELPLAN';
+	protected $view_list = 'spielplaene';
+}
