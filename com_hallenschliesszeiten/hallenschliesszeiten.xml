@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="6.0" method="upgrade">
+    <name>com_hallenschliesszeiten</name>
+    <creationDate>2026-10-10</creationDate>
+    <copyright>2024 Thorsten Austen</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <author>Thorsten Austen</author>
+    <authorEmail>thorsten.austen@gmail.com</authorEmail>
+    <authorUrl>http://</authorUrl>
+    <version>2.0.0</version>
+    <description>COM_HALLENSCHLIESSZEITEN_XML_DESCRIPTION</description>
+    <namespace path="src">Ttc\Component\Hallenschliesszeiten</namespace>
+    
+    
+    
+    <install> 
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <update> 
+        <schemas>
+            <schemapath type="mysql">sql/updates</schemapath>
+        </schemas>
+    </update>
+    <files folder="site">
+        <folder>src</folder>
+        
+        <folder>tmpl</folder>
+    <folder>forms</folder></files>
+    <media destination="com_hallenschliesszeiten" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
+    <languages folder="site/languages">
+        
+			<language tag="en-GB">en-GB/com_hallenschliesszeiten.ini</language>
+    <language tag="de-DE">de-DE/com_hallenschliesszeiten.ini</language></languages>
+    <administration>
+        <menu>COM_HALLENSCHLIESSZEITEN</menu>
+        <submenu>
+            
+			<menu link="option=com_hallenschliesszeiten&amp;view=schliesszeiten" view="schliesszeiten" alt="Hallenschliesszeiten/Schliesszeiten">COM_HALLENSCHLIESSZEITEN_TITLE_SCHLIESSZEITEN</menu>
+
+        <menu link="option=com_hallenschliesszeiten&amp;view=halleninfos" view="halleninfos">COM_HALLENINFOS_TITLE_HALLENINFOS</menu></submenu>
+        <files folder="administrator">
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <folder>forms</folder>
+            <folder>src</folder>
+            <folder>tmpl</folder>
+            <folder>services</folder>
+            <folder>sql</folder>
+        </files>
+        <languages folder="administrator/languages">
+            
+			<language tag="en-GB">en-GB/com_hallenschliesszeiten.ini</language>
+			<language tag="en-GB">en-GB/com_hallenschliesszeiten.sys.ini</language>
+        <language tag="de-DE">de-DE/com_hallenschliesszeiten.ini</language><language tag="de-DE">de-DE/com_hallenschliesszeiten.sys.ini</language></languages>
+    </administration>
+    <config>
+        <fields name="params">
+            <fieldset name="component">
+                <field name="save_history" default="0" />
+            </fieldset>
+        </fields>
+    </config>
+    <plugins>
+    </plugins>
+    
+
+    <scriptfile>script.php</scriptfile></extension>
