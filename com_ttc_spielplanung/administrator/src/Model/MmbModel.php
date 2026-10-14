@@ -27,7 +27,16 @@ class MmbModel extends ListModel
 
     protected function populateState($ordering = null, $direction = null)
     {
+        $search = Factory::getApplication()->getUserStateFromRequest(
+            'com_ttc_spielplanung.mmb.search', 'mmb_search', '', 'string'
+        );
+        $this->setState('filter.search', trim((string) $search));
         parent::populateState('u.id', 'ASC');
+    }
+
+    protected function getStoreId($id = '')
+    {
+        return parent::getStoreId($id . ':' . (string) $this->getState('filter.search'));
     }
 
     protected function getListQuery()
@@ -36,13 +45,19 @@ class MmbModel extends ListModel
         $query = $db->getQuery(true);
 
         $query->select('u.id, u.username, u.name, u.email')
-            ->select('m.id AS mmb_id, m.category_id, m.position, m.is_captain')
+            ->select('m.id AS mmb_id, m.category_id, m.position, m.is_captain, COALESCE(m.email_notification, 1) AS email_notification')
             ->select('cat.title AS category_title')
             ->from($db->quoteName('#__users') . ' AS u')
             ->leftJoin($db->quoteName('#__ttc_mmb') . ' AS m ON m.user_id = u.id')
             ->leftJoin($db->quoteName('#__ttc_relevante_kategorien') . ' AS c ON c.category_id = m.category_id')
 			->leftJoin($db->quoteName('#__categories') . ' AS cat ON cat.id = m.category_id')
-            ->order('c.sort_order ASC, m.position ASC, u.id ASC');
+            ->order('CASE WHEN COALESCE(m.category_id, 0) > 0 THEN 0 ELSE 1 END ASC, CASE WHEN c.sort_order IS NULL THEN 1 ELSE 0 END ASC, c.sort_order ASC, m.category_id ASC, CASE WHEN COALESCE(m.position, 0) > 0 THEN 0 ELSE 1 END ASC, m.position ASC, u.id ASC');
+
+        $search = trim((string) $this->getState('filter.search'));
+        if ($search !== '') {
+            // Literal substring search: quotes and SQL wildcard characters stay data.
+            $query->where('INSTR(LOWER(u.name), LOWER(' . $db->quote($search) . ')) > 0');
+        }
 
         return $query;
     }
@@ -76,6 +91,7 @@ class MmbModel extends ListModel
                 $categoryId = isset($itemData['category_id']) ? (int) $itemData['category_id'] : null;
                 $position = isset($itemData['position']) ? (int) $itemData['position'] : null;
                 $isCaptain = !empty($itemData['is_captain']) ? 1 : 0;
+                $emailNotification = !isset($itemData['email_notification']) || !empty($itemData['email_notification']) ? 1 : 0;
 
                 if ($categoryId && $position && $position < 1)
                 {
@@ -95,17 +111,6 @@ class MmbModel extends ListModel
                 $db->setQuery($query);
                 $mmbId = $db->loadResult();
 
-                if ($isCaptain && $categoryId)
-                {
-                    $query = $db->getQuery(true)
-                        ->update($db->quoteName('#__ttc_mmb'))
-                        ->set('is_captain = 0')
-                        ->where('category_id = ' . $categoryId)
-                        ->where('user_id != ' . $userId);
-                    $db->setQuery($query);
-                    $db->execute();
-                }
-
                 if ($mmbId)
                 {
                     $query = $db->getQuery(true)
@@ -113,6 +118,7 @@ class MmbModel extends ListModel
                         ->set('category_id = ' . ($categoryId ?: 'NULL'))
                         ->set('position = ' . ($position ?: 'NULL'))
                         ->set('is_captain = ' . $isCaptain)
+                        ->set('email_notification = ' . $emailNotification)
                         ->set('modified = ' . $db->quote($now))
                         ->set('modified_by = ' . (int) $user->id)
                         ->where('id = ' . (int) $mmbId);
@@ -121,9 +127,9 @@ class MmbModel extends ListModel
                 {
                     $query = $db->getQuery(true)
                         ->insert($db->quoteName('#__ttc_mmb'))
-                        ->columns(array('user_id', 'category_id', 'position', 'is_captain', 'state', 'created', 'created_by'))
+                        ->columns(array('user_id', 'category_id', 'position', 'is_captain', 'email_notification', 'state', 'created', 'created_by'))
                         ->values(
-                            $userId . ', ' . ($categoryId ?: 'NULL') . ', ' . ($position ?: 'NULL') . ', ' . $isCaptain . ', 1, ' . $db->quote($now) . ', ' . (int) $user->id
+                            $userId . ', ' . ($categoryId ?: 'NULL') . ', ' . ($position ?: 'NULL') . ', ' . $isCaptain . ', ' . $emailNotification . ', 1, ' . $db->quote($now) . ', ' . (int) $user->id
                         );
                 }
 

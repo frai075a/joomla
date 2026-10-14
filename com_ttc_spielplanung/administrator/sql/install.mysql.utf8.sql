@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS `#__ttc_mmb` (
     `category_id` INT(11) NULL,
     `position` INT(11) NULL,
     `is_captain` TINYINT(3) NOT NULL DEFAULT 0,
+    `email_notification` TINYINT(3) NOT NULL DEFAULT 1,
     `state` TINYINT(3) NOT NULL DEFAULT 1,
     `created` DATETIME NOT NULL,
     `created_by` INT(11) NOT NULL DEFAULT 0,
@@ -42,4 +43,21 @@ CREATE TABLE IF NOT EXISTS `#__ttc_spielplanung` (
     UNIQUE KEY `idx_user_game` (`user_id`, `game_id`),
     KEY `idx_user_id` (`user_id`),
     KEY `idx_game_id` (`game_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `#__ttc_spielplan` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `hallennr` VARCHAR(1) NULL DEFAULT '0',
+    `ort_key` SMALLINT NULL DEFAULT 0,
+    `mannschaft` TINYINT NOT NULL,
+    `datum` DATE NOT NULL,
+    `uhrzeit` TIME NOT NULL DEFAULT '00:00:00',
+    `heimmannschaft` VARCHAR(100) NOT NULL,
+    `h_nummer` VARCHAR(4) NOT NULL,
+    `auswaertsmannschaft` VARCHAR(100) NOT NULL,
+    `a_nummer` VARCHAR(4) NOT NULL,
+    `ort` VARCHAR(200) NULL DEFAULT '',
+    PRIMARY KEY (`id`),
+    KEY `idx_mannschaft` (`mannschaft`),
+    KEY `idx_datum` (`datum`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

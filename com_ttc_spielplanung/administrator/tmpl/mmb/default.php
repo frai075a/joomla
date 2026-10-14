@@ -11,6 +11,18 @@ $user = Factory::getApplication()->getIdentity();
 $this->getDocument()->getWebAssetManager()->useScript('core');
 ?>
 
+<form action="<?php echo Route::_('index.php'); ?>" method="get" class="d-flex flex-wrap align-items-end gap-2 mb-3">
+    <input type="hidden" name="option" value="com_ttc_spielplanung" />
+    <input type="hidden" name="view" value="mmb" />
+    <input type="hidden" name="limitstart" value="0" />
+    <div>
+        <label for="mmb-search" class="form-label"><?php echo Text::_('COM_TTC_SPIELPLANUNG_MMB_FILTER_NAME'); ?></label>
+        <input type="search" name="mmb_search" id="mmb-search" class="form-control" value="<?php echo htmlspecialchars(isset($this->state) ? (string) $this->state->get('filter.search', '') : '', ENT_QUOTES, 'UTF-8'); ?>" />
+    </div>
+    <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_TTC_SPIELPLANUNG_MMB_FILTER_APPLY'); ?></button>
+    <a class="btn btn-outline-secondary" href="<?php echo Route::_('index.php?option=com_ttc_spielplanung&view=mmb&mmb_search=&limitstart=0'); ?>"><?php echo Text::_('COM_TTC_SPIELPLANUNG_MMB_FILTER_RESET'); ?></a>
+</form>
+
 <form action="<?php echo Route::_('index.php?option=com_ttc_spielplanung&view=mmb'); ?>" method="post" name="adminForm" id="adminForm">
 
     <div class="row">
@@ -29,6 +41,7 @@ $this->getDocument()->getWebAssetManager()->useScript('core');
                                 <th style="width: 180px;"><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_CATEGORY'); ?></th>
                                 <th style="width: 150px;"><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_POSITION'); ?></th>
                                 <th style="width: 120px;" class="text-center"><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_CAPTAIN'); ?></th>
+                                <th style="width: 160px;" class="text-center"><?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_EMAIL_NOTIFICATION'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,11 +75,15 @@ $this->getDocument()->getWebAssetManager()->useScript('core');
                                         <td class="text-center">
                                             <input type="checkbox" name="mmb[<?php echo (int) $item->id; ?>][is_captain]" value="1" class="form-check-input mmb-captain-checkbox" <?php echo $item->is_captain ? 'checked="checked"' : ''; ?> title="<?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_CAPTAIN'); ?>" <?php echo $item->category_id ? '' : 'disabled="disabled"'; ?> />
                                         </td>
+                                        <td class="text-center">
+                                            <input type="hidden" name="mmb[<?php echo (int) $item->id; ?>][email_notification]" value="0" />
+                                            <input type="checkbox" name="mmb[<?php echo (int) $item->id; ?>][email_notification]" value="1" class="form-check-input" <?php echo !isset($item->email_notification) || $item->email_notification ? 'checked="checked"' : ''; ?> aria-label="<?php echo Text::_('COM_TTC_SPIELPLANUNG_FIELD_EMAIL_NOTIFICATION'); ?>" />
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted">
+                                    <td colspan="7" class="text-center text-muted">
                                         <?php echo Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
                                     </td>
                                 </tr>
@@ -137,36 +154,6 @@ $this->getDocument()->getWebAssetManager()->useScript('core');
 
     form.addEventListener('submit', function(e) {
         this.task.value = e.submitter ? (e.submitter.dataset.saveTask || '') : '';
-    });
-
-    document.querySelectorAll('.mmb-captain-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            if (!this.checked) {
-                return;
-            }
-
-            const row = this.closest('tr');
-            const categorySelect = row.querySelector('.mmb-category-select');
-            const categoryId = categorySelect ? categorySelect.value : '';
-
-            if (!categoryId) {
-                this.checked = false;
-                return;
-            }
-
-            document.querySelectorAll('.mmb-captain-checkbox').forEach(other => {
-                if (other === this) {
-                    return;
-                }
-
-                const otherRow = other.closest('tr');
-                const otherSelect = otherRow.querySelector('.mmb-category-select');
-
-                if (otherSelect && otherSelect.value === categoryId) {
-                    other.checked = false;
-                }
-            });
-        });
     });
 
     document.querySelectorAll('.mmb-category-select').forEach(select => {
