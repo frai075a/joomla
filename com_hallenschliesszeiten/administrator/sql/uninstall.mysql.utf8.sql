@@ -1,0 +1,1 @@
+-- Tabellen und Daten bleiben bei einer Deinstallation erhalten.
