@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="5.0" method="upgrade">
     <name>com_ttc_spielplanung</name>
-    <creationDate>2026-10-02</creationDate>
+    <creationDate>2026-10-08</creationDate>
     <copyright>2026 Thorsten Austen</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <author>Thorsten Austen</author>
     <authorEmail>thorsten.austen@gmail.com</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>1.7.0</version>
+    <version>1.8.6</version>
     <description>Saisonverwaltung- Diese Komponente beinhaltet Pflegedialoge, um Spieler zu einem Mannschaftsmeldebogen zuzuordnen und darauf basierende eine Saisonplanung (Zu- und Absagen einzelner Mannschaftsmitglieder) zu verwalten. </description>
     <namespace path="src">Ttc\Component\Spielplanung</namespace>
 
@@ -40,6 +40,11 @@
         <language tag="en-GB">en-GB/com_ttc_spielplanung.sys.ini</language>
     </languages>
 
+    <media destination="com_ttc_spielplanung" folder="media">
+        <folder>css</folder>
+        <folder>js</folder>
+        <filename>joomla.asset.json</filename>
+    </media>
     <administration>
         <menu>COM_TTC_SPIELPLANUNG</menu>
         <submenu>
@@ -48,6 +53,7 @@
             <menu link="option=com_ttc_spielplanung&amp;view=saisonplanung" view="saisonplanung" alt="Spielplanung/Saisonplanung">COM_TTC_SPIELPLANUNG_TITLE_SAISONPLANUNG</menu>
         <menu link="option=com_ttc_spielplanung&amp;view=eintraege" view="eintraege" alt="Spielplanung/Einträge">COM_TTC_SPIELPLANUNG_TITLE_EINTRAEGE</menu>
             <menu link="option=com_ttc_spielplanung&amp;view=saisoninitialisieren" view="saisoninitialisieren" alt="Spielplanung/Saison initialisieren">COM_TTC_SPIELPLANUNG_TITLE_SAISONINITIALISIEREN</menu>
+            <menu link="option=com_ttc_spielplanung&amp;view=spielplaene" view="spielplaene" alt="Verwalten des Spielplans">COM_TTC_SPIELPLANUNG_SPIELPLAN_TITLE_SPIELPLAENE</menu>
         </submenu>
         <files folder="administrator">
             <filename>access.xml</filename>

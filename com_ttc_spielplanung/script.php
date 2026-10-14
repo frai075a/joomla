@@ -27,6 +27,14 @@ class com_ttc_spielplanungInstallerScript
             $db->execute();
         }
 
+        if (!isset($columns['email_notification']))
+        {
+            $db->setQuery('ALTER TABLE ' . $db->quoteName('#__ttc_mmb')
+                . ' ADD COLUMN ' . $db->quoteName('email_notification')
+                . ' TINYINT(3) NOT NULL DEFAULT 1 AFTER ' . $db->quoteName('is_captain'));
+            $db->execute();
+        }
+
         // Repair the nullable status definition even after an interrupted upgrade.
         $statusColumns = $db->getTableColumns('#__ttc_spielplanung', false);
         $status = $statusColumns['status'];

@@ -39,7 +39,7 @@ class SpielplanModel extends BaseDatabaseModel
      * Application operation: commit availability first, then notify captains.
      * Mail failures are warnings and must not turn a successful save into a failure.
      *
-     * @return array|false ['warnings' => string[]], or false when saving failed.
+     * @return array|false ['warnings' => string[], 'notified_captains' => string[]], or false when saving failed.
      */
     public function saveAndNotify(array $statuses)
     {
@@ -54,7 +54,9 @@ class SpielplanModel extends BaseDatabaseModel
         }
 
         $notifier = new CaptainNotificationService();
-        return array('warnings' => $notifier->notify($this, $player, $changes));
+        $notifiedCaptains = array();
+        $warnings = $notifier->notify($this, $player, $changes, $notifiedCaptains);
+        return array('warnings' => $warnings, 'notified_captains' => $notifiedCaptains);
     }
 
     public function saveGame($gameId, $status)
@@ -181,13 +183,13 @@ class SpielplanModel extends BaseDatabaseModel
     }
 
     /**
-     * Returns the captain's user id/name/email for the given category, or null if none is set.
+     * Returns all active captains who enabled email notifications for the given category.
      */
-    public function getCaptain($categoryId)
+    public function getCaptains($categoryId)
     {
         $categoryId = (int) $categoryId;
         if (!$categoryId) {
-            return null;
+            return array();
         }
 
         $db = $this->getDatabase();
@@ -197,9 +199,10 @@ class SpielplanModel extends BaseDatabaseModel
             ->innerJoin($db->quoteName('#__users') . ' AS u ON u.id = mmb.user_id')
             ->where('mmb.category_id = ' . $categoryId)
             ->where('mmb.is_captain = 1')
+            ->where('mmb.email_notification = 1')
             ->where('mmb.state = 1');
         $db->setQuery($query);
 
-        return $db->loadObject() ?: null;
+        return $db->loadObjectList() ?: array();
     }
 }

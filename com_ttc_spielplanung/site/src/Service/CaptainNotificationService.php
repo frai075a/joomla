@@ -14,10 +14,12 @@ use Joomla\CMS\HTML\HTMLHelper;
 class CaptainNotificationService
 {
     /**
+     * @param string[] $notifiedCaptains Names of successfully notified captains.
      * @return string[] Notification failures; other teams are still notified.
      */
-    public function notify($model, $user, array $changes)
+    public function notify($model, $user, array $changes, array &$notifiedCaptains = array())
     {
+        $notifiedCaptains = array();
         $changesByCategory = array();
         foreach ($changes as $change)
         {
@@ -29,13 +31,24 @@ class CaptainNotificationService
         {
             try
             {
-                $captain = $model->getCaptain($categoryId);
-                if (!$captain || empty($captain->email))
+                $captains = $model->getCaptains($categoryId);
+                foreach ($captains as $captain)
                 {
-                    continue;
-                }
+                    if (empty($captain->email))
+                    {
+                        continue;
+                    }
 
-                $this->sendCaptainMail($captain, $user, $categoryChanges);
+                    try
+                    {
+                        $this->sendCaptainMail($captain, $user, $categoryChanges);
+                        $notifiedCaptains[] = $captain->name;
+                    }
+                    catch (\Exception $e)
+                    {
+                        $warnings[] = $e->getMessage();
+                    }
+                }
             }
             catch (\Exception $e)
             {
@@ -43,6 +56,7 @@ class CaptainNotificationService
             }
         }
 
+        $notifiedCaptains = array_values(array_unique($notifiedCaptains));
         return $warnings;
     }
 

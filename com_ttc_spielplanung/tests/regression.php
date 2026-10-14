@@ -81,6 +81,7 @@ namespace Joomla\CMS {
                 public function setBody($value) { $this->body = $value; }
                 public function addRecipient($value) { $this->recipient = $value; }
                 public function Send() {
+                    if (Factory::$mailFailure === $this->recipient) { throw new \RuntimeException('Recipient failed'); }
                     if (Factory::$mailFailure === 'throw') { throw new \RuntimeException('SMTP failed'); }
                     if (Factory::$mailFailure === 'false') { return false; }
                     Factory::$sent[] = $this;
@@ -184,6 +185,7 @@ namespace {
         public function loadColumn() { return $this->pdo->query($this->query)->fetchAll(\PDO::FETCH_COLUMN); }
         public function loadResult() { return $this->pdo->query($this->query)->fetchColumn(); }
         public function loadObject() { return $this->pdo->query($this->query)->fetchObject(); }
+        public function loadObjectList() { return $this->pdo->query($this->query)->fetchAll(\PDO::FETCH_OBJ); }
         public function loadAssocList($key = null) {
             $rows = $this->pdo->query($this->query)->fetchAll(\PDO::FETCH_ASSOC);
             return $key === null ? $rows : array_column($rows, null, $key);
@@ -218,13 +220,14 @@ namespace {
             public $input;
             public $tokenValid = true;
             public $messages = array();
+            public $messageTexts = array();
             public $redirects = array();
             public function getIdentity() { return Factory::$user; }
             public function get($key, $default = null) { return $default; }
             public function getSession() { return Factory::createTestSession(); }
             public function redirect($url) { $this->redirects[] = $url; }
             public function __construct() { $this->input = new Input(); }
-            public function enqueueMessage($message, $type = 'message') { $this->messages[] = $type; }
+            public function enqueueMessage($message, $type = 'message') { $this->messages[] = $type; $this->messageTexts[] = $message; }
         };
         Factory::$db = new Database();
         Factory::$db->pdo->exec("
@@ -234,7 +237,7 @@ namespace {
             INSERT INTO categories VALUES (10, 'com_content'), (20, 'com_content'), (30, 'com_content'), (40, 'other');
             CREATE TABLE ttc_relevante_kategorien (id INTEGER PRIMARY KEY, category_id INTEGER UNIQUE, sort_order INTEGER, state INTEGER, created TEXT, created_by INTEGER, modified TEXT, modified_by INTEGER);
             INSERT INTO ttc_relevante_kategorien VALUES (1,10,1,1,'original',1,NULL,0),(2,20,2,1,'original',1,NULL,0);
-            CREATE TABLE ttc_mmb (user_id INTEGER UNIQUE, category_id INTEGER, state INTEGER, id INTEGER PRIMARY KEY, is_captain INTEGER DEFAULT 0, created TEXT, created_by INTEGER, modified TEXT, modified_by INTEGER);
+            CREATE TABLE ttc_mmb (user_id INTEGER UNIQUE, category_id INTEGER, state INTEGER, id INTEGER PRIMARY KEY, is_captain INTEGER DEFAULT 0, email_notification INTEGER NOT NULL DEFAULT 1, created TEXT, created_by INTEGER, modified TEXT, modified_by INTEGER);
             INSERT INTO ttc_mmb (user_id,category_id,state) VALUES (7,10,1);
             CREATE TABLE ttc_spielplan (id INTEGER, mannschaft INTEGER, datum TEXT, uhrzeit TEXT, ort TEXT, heimmannschaft TEXT, auswaertsmannschaft TEXT);
             INSERT INTO ttc_spielplan VALUES (101,1,'2026-10-01','19:00','Hall','TTC Nordend Frankfurt','Guest'),(102,2,'2026-10-02','19:00','Hall','Host','TTC Nordend Frankfurt');
@@ -254,9 +257,12 @@ namespace {
         throw new \RuntimeException('Expected rejection');
     }
     function countAvailability() { return (int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_spielplanung')->fetchColumn(); }
+    $passedTests = 0;
     function test($name, $callback) {
+        global $passedTests;
         fixture();
         $callback();
+        $passedTests++;
         echo "PASS: $name\n";
     }
 
@@ -482,20 +488,22 @@ namespace {
         public function execute() {
             if ($this->fail) { throw new \RuntimeException('Schema write failed'); }
             $this->writes++;
-            $this->columns['is_captain'] = true;
+            if (strpos($this->query, 'ADD COLUMN is_captain') !== false) { $this->columns['is_captain'] = true; }
+            if (strpos($this->query, 'ADD COLUMN email_notification') !== false) { $this->columns['email_notification'] = true; }
             $this->statusColumn = (object) ['Null' => 'YES', 'Default' => null];
         }
     }
-    test('Installer repairs missing captain column and is repeatable', function() {
+    test('Installer repairs missing captain and notification columns and is repeatable', function() {
         Factory::$db = new SchemaDatabase();
         $installer = new \com_ttc_spielplanungInstallerScript();
         $installer->postflight('update', null);
         $installer->postflight('update', null);
-        check(Factory::$db->writes === 1);
+        check(Factory::$db->writes === 2);
     });
     test('Installer leaves existing captain column unchanged', function() {
         Factory::$db = new SchemaDatabase();
         Factory::$db->columns['is_captain'] = true;
+        Factory::$db->columns['email_notification'] = true;
         (new \com_ttc_spielplanungInstallerScript())->postflight('install', null);
         check(Factory::$db->writes === 0);
     });
@@ -579,20 +587,20 @@ namespace {
     });
 
 
-    test('Roster model saves rows and replaces the team captain', function() {
+    test('Roster model saves multiple captains without clearing other roster rows', function() {
         Factory::$db->pdo->exec('UPDATE ttc_mmb SET is_captain=1');
         $model = new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel();
         check($model->saveRows(array(8 => array('category_id'=>10,'position'=>1,'is_captain'=>1))) === true);
         $captains = Factory::$db->pdo->query('SELECT user_id FROM ttc_mmb WHERE is_captain=1')->fetchAll(\PDO::FETCH_COLUMN);
-        check($captains == array(8));
+        check($captains == array(7,8));
         $model->saveRows(array(8 => array('category_id'=>'','position'=>'','is_captain'=>1)));
-        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_mmb WHERE is_captain=1')->fetchColumn() === 0);
+        check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_mmb WHERE is_captain=1')->fetchColumn() === 1);
     });
-    test('Roster model rolls back captain clearing when a write fails', function() {
+    test('Roster model rolls back all roster changes when a write fails', function() {
         Factory::$db->pdo->exec('UPDATE ttc_mmb SET is_captain=1');
         Factory::$db->failAt = 2;
         rejects(function() {
-            (new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel())->saveRows(array(8 => array('category_id'=>10,'position'=>1,'is_captain'=>1)));
+            (new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel())->saveRows(array(8 => array('category_id'=>10,'position'=>1,'is_captain'=>1), 9 => array('category_id'=>10,'position'=>2,'is_captain'=>1)));
         });
         check((int) Factory::$db->pdo->query('SELECT is_captain FROM ttc_mmb WHERE user_id=7')->fetchColumn() === 1);
         check((int) Factory::$db->pdo->query('SELECT COUNT(*) FROM ttc_mmb')->fetchColumn() === 1);
@@ -624,13 +632,57 @@ namespace {
         rejects(function() { (new \Ttc\Component\Spielplanung\Administrator\Controller\MmbController())->save(); });
         check(Factory::$db->writes === $writes);
     });
+    test('Roster notification preference defaults on and persists off/on for new and existing rows', function() {
+        $model = new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel();
+        $model->saveRows(array(8 => array('category_id'=>10,'is_captain'=>1)));
+        check((int) Factory::$db->pdo->query('SELECT email_notification FROM ttc_mmb WHERE user_id=8')->fetchColumn() === 1);
+        $model->saveRows(array(8 => array('category_id'=>10,'is_captain'=>1,'email_notification'=>0),9 => array('category_id'=>10,'is_captain'=>1,'email_notification'=>0)));
+        check((int) Factory::$db->pdo->query('SELECT SUM(email_notification) FROM ttc_mmb WHERE user_id IN (8,9)')->fetchColumn() === 0);
+        $model->saveRows(array(8 => array('category_id'=>10,'is_captain'=>1,'email_notification'=>1)));
+        check((int) Factory::$db->pdo->query('SELECT email_notification FROM ttc_mmb WHERE user_id=8')->fetchColumn() === 1);
+    });
+    test('Personal changes notify every enabled captain in the same active team only', function() {
+        Factory::$db->pdo->exec("INSERT INTO users (id,name,email) VALUES (8,'Second','second@example.test'),(9,'Disabled','disabled@example.test'),(10,'Other','other@example.test'),(11,'Inactive','inactive@example.test');
+            UPDATE ttc_mmb SET is_captain=1;
+            INSERT INTO ttc_mmb (user_id,category_id,state,is_captain,email_notification) VALUES (8,10,1,1,1),(9,10,1,1,0),(10,20,1,1,1),(11,10,0,1,1);");
+        $model = new SpielplanModel();
+        check($model->getCaptains(0) === array());
+        check(count($model->getCaptains(10)) === 2);
+        foreach (array(1,0) as $status) {
+            Factory::$sent = array();
+            check($model->saveAndNotify(array(101=>$status)) === array('warnings'=>array(), 'notified_captains'=>array('Player','Second')));
+            check(count(Factory::$sent) === 2);
+            $recipients = array_column(Factory::$sent, 'recipient');
+            check(in_array('second@example.test', $recipients));
+            check(!in_array('disabled@example.test', $recipients) && !in_array('other@example.test', $recipients));
+        }
+        Factory::$db->pdo->exec('UPDATE ttc_mmb SET email_notification=0');
+        Factory::$sent = array();
+        check($model->saveAndNotify(array(101=>1)) === array('warnings'=>array(), 'notified_captains'=>array()));
+        check(count(Factory::$sent) === 0 && countAvailability() === 1);
+    });
+    test('A failed captain email does not stop other captains of the same team', function() {
+        $model = new class {
+            public function getCaptains($categoryId) {
+                return array((object) ['name'=>'Failed captain','email'=>'fail@example.test'],(object) ['name'=>'Successful captain','email'=>'ok@example.test']);
+            }
+        };
+        Factory::$mailFailure = 'fail@example.test';
+        $change = array('category_id'=>10,'spieldatum'=>'2026-10-01','uhrzeit'=>'19:00','gegner'=>'Guest','sporthalle'=>'Hall','old_status'=>1,'new_status'=>0);
+        $notifiedCaptains = array();
+        $warnings = (new \Ttc\Component\Spielplanung\Site\Service\CaptainNotificationService())->notify($model,Factory::$user,array($change),$notifiedCaptains);
+        check($notifiedCaptains === array('Successful captain'));
+        check(count($warnings) === 1 && count(Factory::$sent) === 1);
+        check(Factory::$sent[0]->recipient === 'ok@example.test');
+    });
+
     test('Save operation notifies only actual changes after commit', function() {
         Factory::$db->pdo->exec('UPDATE ttc_mmb SET is_captain=1');
         $model = new SpielplanModel();
-        check($model->saveAndNotify(array(101=>0)) === array('warnings'=>array()));
+        check($model->saveAndNotify(array(101=>0)) === array('warnings'=>array(), 'notified_captains'=>array('Player')));
         check(countAvailability() === 1 && count(Factory::$sent) === 1);
         check(strpos(Factory::$sent[0]->body, 'Guest') !== false);
-        check($model->saveAndNotify(array(101=>0)) === array('warnings'=>array()));
+        check($model->saveAndNotify(array(101=>0)) === array('warnings'=>array(), 'notified_captains'=>array()));
         check(count(Factory::$sent) === 1);
         check($model->saveAndNotify(array(102=>0)) === false);
         check(count(Factory::$sent) === 1);
@@ -648,17 +700,17 @@ namespace {
     });
     test('Captain lookup failures are warnings and do not undo saves', function() {
         $model = new class extends SpielplanModel {
-            public function getCaptain($categoryId) { throw new \RuntimeException('Lookup failed'); }
+            public function getCaptains($categoryId) { throw new \RuntimeException('Lookup failed'); }
         };
-        check($model->saveAndNotify(array(101=>0)) === array('warnings'=>array('Lookup failed')));
+        check($model->saveAndNotify(array(101=>0)) === array('warnings'=>array('Lookup failed'), 'notified_captains'=>array()));
         check(countAvailability() === 1);
     });
     test('Notification service groups changes and continues after a team fails', function() {
         $model = new class {
-            public function getCaptain($categoryId) {
+            public function getCaptains($categoryId) {
                 if ($categoryId === 10) { throw new \RuntimeException('Lookup failed'); }
-                if ($categoryId === 30) { return null; }
-                return (object) array('email'=>'captain@example.test');
+                if ($categoryId === 30) { return array(); }
+                return array((object) array('name'=>'Captain','email'=>'captain@example.test'));
             }
         };
         $change = array('category_id'=>10,'spieldatum'=>'2026-10-01','uhrzeit'=>'19:00','gegner'=>'Guest','sporthalle'=>'Hall','old_status'=>1,'new_status'=>0);
@@ -668,6 +720,37 @@ namespace {
         check(count($warnings) === 1 && count(Factory::$sent) === 1);
         check(substr_count(Factory::$sent[0]->body,'Guest') === 2);
     });
+    test('Personal save success names only captains whose email was sent and escapes names', function() {
+        Factory::$db->pdo->exec("UPDATE users SET name='<b>Captain</b>' WHERE id=7;
+            UPDATE ttc_mmb SET is_captain=1;
+            INSERT INTO users (id,name,email) VALUES (8,'Second','second@example.test'),(9,'Disabled','disabled@example.test');
+            INSERT INTO ttc_mmb (user_id,category_id,state,is_captain,email_notification) VALUES (8,10,1,1,1),(9,10,1,1,0);");
+        Factory::$app->input->data = array('game_ids'=>array(101),'status_101'=>'1');
+        (new \Ttc\Component\Spielplanung\Site\Controller\DisplayController())->saveGame();
+        check(Factory::$app->messages === array('message'));
+        $message = Factory::$app->messageTexts[0];
+        check(strpos($message, 'COM_TTC_SPIELPLANUNG_SAVE_SUCCESS') !== false);
+        check(strpos($message, 'COM_TTC_SPIELPLANUNG_MAIL_NOTIFIED_CAPTAINS') !== false);
+        check(strpos($message, '&lt;b&gt;Captain&lt;/b&gt;, Second') !== false);
+        check(strpos($message, 'Disabled') === false && strpos($message, '<b>') === false);
+        Factory::$app->messageTexts = array();
+        (new \Ttc\Component\Spielplanung\Site\Controller\DisplayController())->saveGame();
+        check(Factory::$app->messageTexts === array('COM_TTC_SPIELPLANUNG_SAVE_SUCCESS'));
+        Factory::$app->messageTexts = array();
+        Factory::$mailFailure = 'second@example.test';
+        Factory::$app->input->data['status_101'] = '0';
+        (new \Ttc\Component\Spielplanung\Site\Controller\DisplayController())->saveGame();
+        check(strpos(Factory::$app->messageTexts[0], '&lt;b&gt;Captain&lt;/b&gt;') !== false);
+        check(strpos(Factory::$app->messageTexts[0], 'Second') === false);
+        check(end(Factory::$app->messages) === 'warning');
+    });
+    test('Personal save without enabled notifications has only the save success message', function() {
+        Factory::$db->pdo->exec('UPDATE ttc_mmb SET is_captain=1,email_notification=0');
+        Factory::$app->input->data = array('game_ids'=>array(101),'status_101'=>'1');
+        (new \Ttc\Component\Spielplanung\Site\Controller\DisplayController())->saveGame();
+        check(Factory::$app->messageTexts === array('COM_TTC_SPIELPLANUNG_SAVE_SUCCESS'));
+        check(count(Factory::$sent) === 0);
+    });
     test('Frontend controller reports successful save and mail warning separately', function() {
         Factory::$db->pdo->exec('UPDATE ttc_mmb SET is_captain=1');
         Factory::$mailFailure = 'throw';
@@ -675,6 +758,7 @@ namespace {
         (new \Ttc\Component\Spielplanung\Site\Controller\DisplayController())->saveGame();
         check(countAvailability() === 1);
         check(Factory::$app->messages === array('message','warning'));
+        check(Factory::$app->messageTexts[0] === 'COM_TTC_SPIELPLANUNG_SAVE_SUCCESS');
     });
 
 
@@ -753,9 +837,17 @@ namespace {
         $view->items = array(
             (object) array('id'=>7,'name'=>'Assigned','username'=>'assigned','email'=>'','category_id'=>10,'position'=>2,'is_captain'=>0),
             (object) array('id'=>8,'name'=>'Unassigned','username'=>'unassigned','email'=>'','category_id'=>null,'position'=>null,'is_captain'=>0),
-            (object) array('id'=>9,'name'=>'No position','username'=>'no-position','email'=>'','category_id'=>10,'position'=>null,'is_captain'=>0)
+            (object) array('id'=>9,'name'=>'No position','username'=>'no-position','email'=>'','category_id'=>10,'position'=>null,'is_captain'=>0,'email_notification'=>0)
         );
         $html = $view->render();
+        check(strpos($html, 'COM_TTC_SPIELPLANUNG_FIELD_EMAIL_NOTIFICATION') !== false);
+        foreach (array(7,8,9) as $id) {
+            check(preg_match('/<input type="checkbox" name="mmb\\[' . $id . '\\]\\[email_notification\\]"[^>]*>/', $html, $match) === 1);
+            check((strpos($match[0], 'checked="checked"') !== false) === ($id !== 9));
+            check(strpos($match[0], 'disabled') === false);
+            check(strpos($html, 'name="mmb[' . $id . '][email_notification]" value="0"') !== false);
+        }
+        check(strpos($html, 'other.checked = false') === false);
         foreach (array(7,8,9) as $id) {
             check(preg_match('/<input type="number" name="mmb\[' . $id . '\]\[position\]"[^>]*>/', $html, $match) === 1);
             check(strpos($match[0], $id === 7 ? 'value="2"' : 'value=""') !== false);
@@ -1033,6 +1125,7 @@ namespace {
     test('Installer repairs nullable status and default once', function() {
         Factory::$db = new SchemaDatabase();
         Factory::$db->columns['is_captain'] = true;
+        Factory::$db->columns['email_notification'] = true;
         Factory::$db->statusColumn = (object) ['Null' => 'NO', 'Default' => '1'];
         $installer = new \com_ttc_spielplanungInstallerScript();
         $installer->postflight('update', null);
@@ -1041,9 +1134,20 @@ namespace {
         $installer->postflight('update', null);
         check(Factory::$db->writes === 1);
     });
+    test('Installer repairs notification column independently and preserves existing preferences', function() {
+        Factory::$db = new SchemaDatabase();
+        Factory::$db->columns['is_captain'] = true;
+        $installer = new \com_ttc_spielplanungInstallerScript();
+        $installer->postflight('update', null);
+        check(Factory::$db->writes === 1);
+        check(strpos(Factory::$db->query, 'ADD COLUMN email_notification TINYINT(3) NOT NULL DEFAULT 1') !== false);
+        $installer->postflight('update', null);
+        check(Factory::$db->writes === 1);
+    });
     test('Installer surfaces nullable status migration failures', function() {
         Factory::$db = new SchemaDatabase();
         Factory::$db->columns['is_captain'] = true;
+        Factory::$db->columns['email_notification'] = true;
         Factory::$db->statusColumn = (object) ['Null' => 'NO', 'Default' => '1'];
         Factory::$db->fail = true;
         rejects(function() { (new \com_ttc_spielplanungInstallerScript())->postflight('update', null); });
@@ -1169,5 +1273,27 @@ namespace {
         check(strpos($view->render(), '<button') === false);
     });
 
-    echo "All 86 regression tests passed.\n";
+
+    test('Roster lists assigned teams first and missing positions last within each team', function() {
+        Factory::$db->pdo->exec("INSERT INTO users VALUES
+            (8,'No team','n',''),(9,'No position','p',''),(10,'First','f',''),
+            (11,'Second team','s',''),(12,'Zero position','z','');
+            INSERT INTO ttc_mmb (user_id,category_id,position) VALUES
+            (9,10,NULL),(10,10,1),(11,20,1),(12,10,0)");
+        $model = new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel();
+        $query = (new \ReflectionMethod($model, 'getListQuery'))->invoke($model);
+        Factory::$db->setQuery($query);
+        check(array_column(Factory::$db->loadAssocList(), 'id') === [10,7,9,12,11,8]);
+    });
+
+    test('Roster name filter matches partial names and treats SQL input literally', function() {
+        $model = new \Ttc\Component\Spielplanung\Administrator\Model\MmbModel();
+        foreach (['LAY' => [7], 'unknown' => [], '%' => [], "' OR 1=1 --" => [], '' => [7]] as $search => $expected) {
+            $model->state['filter.search'] = $search;
+            Factory::$db->setQuery((new \ReflectionMethod($model, 'getListQuery'))->invoke($model));
+            check(array_column(Factory::$db->loadAssocList(), 'id') === $expected, 'Filter: ' . $search);
+        }
+    });
+
+    echo "All $passedTests regression tests passed.\n";
 }
