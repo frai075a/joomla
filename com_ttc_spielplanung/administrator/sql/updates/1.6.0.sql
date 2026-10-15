@@ -1,0 +1,1 @@
+ALTER TABLE `#__ttc_spielplanung` MODIFY COLUMN `status` TINYINT(3) NULL DEFAULT NULL;
