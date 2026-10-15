@@ -1,0 +1,74 @@
+{
+
+  "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+
+  "name": "com_ttc_hallenbuchung",
+
+  "version": "4.1.0",
+
+  "license": "GNU General Public License version 2 or later; see LICENSE.txt",
+
+  "assets": [
+
+    {
+
+      "name": "com_ttc_hallenbuchung.admin",
+
+      "type": "style",
+
+      "uri": "com_ttc_hallenbuchung/admin.css"
+
+    },
+
+    {
+
+      "name": "com_ttc_hallenbuchung.admin",
+
+      "type": "script",
+
+      "uri": "com_ttc_hallenbuchung/admin.js",
+
+      "dependencies": [
+
+        "jquery"
+
+      ],
+
+      "attributes": {
+
+        "defer": true
+
+      }
+
+    },
+
+    {
+
+      "name": "com_ttc_hallenbuchung.list",
+
+      "type": "style",
+
+      "uri": "com_ttc_hallenbuchung/list.css"
+
+    },
+
+    {
+
+      "name": "com_ttc_hallenbuchung.form",
+
+      "type": "style",
+
+      "uri": "com_ttc_hallenbuchung/form.css",
+
+      "dependencies": [
+
+        "switcher"
+
+      ]
+
+    }
+
+  ]
+
+}
+

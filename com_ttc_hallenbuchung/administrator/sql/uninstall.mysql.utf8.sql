@@ -1,0 +1,1 @@
+-- Shared booking tables are retained when the component is uninstalled.

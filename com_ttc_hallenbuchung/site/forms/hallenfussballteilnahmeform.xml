@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Ttchallenbuchung\Component\Ttc_hallenbuchung\Site\Field">
+  <fieldset>
+    <field name="id" type="hidden" default="0" filter="integer"/>
+    <field name="datum" default="NOW" type="teilnahmedatum" format="%d.%m.%Y" translateformat="false" required="true" class="form-control" hint="TT.MM.JJJJ" label="COM_TTC_HALLENBUCHUNG_FORM_LBL_HALLENFUSSBALLTEILNAHME_DATUM"/>
+    <field name="zusage" type="radio" layout="joomla.form.field.radio.switcher" default="ja" required="true" label="COM_TTC_HALLENBUCHUNG_FORM_LBL_HALLENFUSSBALLTEILNAHME_ZUSAGE">
+      <option value="nein">COM_TTC_HALLENBUCHUNG_HALLENFUSSBALLTEILNEHMER_ZUSAGE_OPTION_NEIN</option>
+      <option value="ja">COM_TTC_HALLENBUCHUNG_HALLENFUSSBALLTEILNEHMER_ZUSAGE_OPTION_JA</option>
+    </field>
+    <field name="teilnehmer" type="text" class="form-control" required="true" filter="string" label="COM_TTC_HALLENBUCHUNG_FORM_LBL_HALLENFUSSBALLTEILNAHME_TEILNEHMER"/>
+  </fieldset>
+</form>

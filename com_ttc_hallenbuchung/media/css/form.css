@@ -1,0 +1,71 @@
+.hallenfussballteilnahme-edit .control-group { margin-bottom: 1rem; }
+.hallenfussballteilnahme-edit .control-label { margin-bottom: .35rem; }
+.hallenfussballteilnahme-edit .form-control { max-width: 30rem; }
+.hallenfussball-form-actions { display: flex; gap: .5rem; margin-top: 1.5rem; }
+.hallenfussball-created { font-size: calc(1em - 2pt); font-style: italic; margin: 1rem 0 0; }
+
+/* Rounded participation switch; keep Joomla's native radio controls. */
+.hallenfussballteilnahme-edit #jform_zusage .switcher {
+    width: 132px;
+    height: 46px;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input {
+    width: 132px;
+    height: 46px;
+    z-index: 4;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input:checked {
+    z-index: 3;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher label {
+    inset-inline-start: 6px;
+    margin-inline-start: 0;
+    min-width: 0;
+    width: 78px;
+    line-height: 46px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    pointer-events: none;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input:checked + label {
+    z-index: 2;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input[value="ja"] + label {
+    inset-inline-start: 48px;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher .toggle-outside {
+    width: 132px;
+    height: 46px;
+    border: 0;
+    border-radius: 999px;
+    background: #a53131;
+    z-index: 1;
+    pointer-events: none;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input[value="ja"]:checked ~ .toggle-outside {
+    background: #208800;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher .toggle-inside {
+    top: 4px;
+    left: 90px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px #0003;
+    transition: left .2s ease;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input[value="ja"]:checked ~ .toggle-outside .toggle-inside {
+    left: 4px;
+}
+.hallenfussballteilnahme-edit #jform_zusage .switcher input:focus-visible ~ .toggle-outside {
+    outline: 2px solid #222;
+    outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+    .hallenfussballteilnahme-edit #jform_zusage .switcher .toggle-inside {
+        transition: none;
+    }
+}
