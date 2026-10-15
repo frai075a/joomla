@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,8 +19,8 @@ use \Joomla\CMS\Layout\LayoutHelper;
 use \Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
 
-HTMLHelper::_('bootstrap.tooltip');
-HTMLHelper::_('behavior.multiselect');
+
+$this->document->getWebAssetManager()->useScript('multiselect');
 
 // Import CSS
 $wa =  $this->document->getWebAssetManager();
@@ -28,7 +28,7 @@ $wa->useStyle('com_hallenschliesszeiten.admin')
     ->useScript('com_hallenschliesszeiten.admin');
 
 $user      = Factory::getApplication()->getIdentity();
-$userId    = $user->get('id');
+$userId    = $user->id;
 $listOrder = $this->state->get('list.ordering');
 $listDirn  = $this->state->get('list.direction');
 $canOrder  = $user->authorise('core.edit.state', 'com_hallenschliesszeiten');
@@ -43,6 +43,7 @@ if (!empty($saveOrder))
 
 ?>
 
+<?php echo $this->sidebar; ?>
 <form action="<?php echo Route::_('index.php?option=com_hallenschliesszeiten&view=schliesszeiten'); ?>" method="post"
 	  name="adminForm" id="adminForm">
 	<div class="row">

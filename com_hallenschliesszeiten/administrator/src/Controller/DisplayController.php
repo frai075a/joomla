@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,7 +19,7 @@ use Joomla\CMS\Router\Route;
 /**
  * Hallenschliesszeiten master display controller.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class DisplayController extends BaseController
 {
@@ -27,7 +27,7 @@ class DisplayController extends BaseController
 	 * The default view.
 	 *
 	 * @var    string
-	 * @since  1.2.0
+	 * @since  1.3.0
 	 */
 	protected $default_view = 'schliesszeiten';
 
@@ -39,7 +39,7 @@ class DisplayController extends BaseController
 	 *
 	 * @return  BaseController|boolean  This object to support chaining.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public function display($cachable = false, $urlparams = array())
 	{

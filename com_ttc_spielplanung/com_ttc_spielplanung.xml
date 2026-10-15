@@ -7,7 +7,7 @@
     <author>Thorsten Austen</author>
     <authorEmail>thorsten.austen@gmail.com</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>1.8.5</version>
+    <version>1.8.6</version>
     <description>Saisonverwaltung- Diese Komponente beinhaltet Pflegedialoge, um Spieler zu einem Mannschaftsmeldebogen zuzuordnen und darauf basierende eine Saisonplanung (Zu- und Absagen einzelner Mannschaftsmitglieder) zu verwalten. </description>
     <namespace path="src">Ttc\Component\Spielplanung</namespace>
 

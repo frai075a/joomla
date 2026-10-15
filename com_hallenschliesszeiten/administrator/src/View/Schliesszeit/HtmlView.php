@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -20,7 +20,7 @@ use \Joomla\CMS\Language\Text;
 /**
  * View class for a single Schliesszeit.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class HtmlView extends BaseHtmlView
 {
@@ -41,12 +41,12 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state = $this->get('State');
-		$this->item  = $this->get('Item');
-		$this->form  = $this->get('Form');
+		$this->state = $this->getModel()->getState();
+		$this->item  = $this->getModel()->getItem();
+		$this->form  = $this->getModel()->getForm();
 
 		// Check for errors.
-		if (count($errors = $this->get('Errors')))
+		if (count($errors = $this->getModel()->getErrors()))
 		{
 			throw new \Exception(implode("\n", $errors));
 		}
@@ -71,7 +71,7 @@ class HtmlView extends BaseHtmlView
 
 		if (isset($this->item->checked_out))
 		{
-			$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->get('id'));
+			$checkedOut = !($this->item->checked_out == 0 || $this->item->checked_out == $user->id);
 		}
 		else
 		{

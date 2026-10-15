@@ -1,8 +1,8 @@
 <?php
 
 /**
- * @version    CVS: 1.2.0
- * @package    Com_Hallenschliesszeiten
+ * @version    CVS: 1.0.0
+ * @package    Com_Halleninfos
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -28,7 +28,7 @@ use Joomla\CMS\Menu\AbstractMenu;
 use Joomla\CMS\Component\ComponentHelper;
 
 /**
- * Class HallenschliesszeitenRouter
+ * Class HalleninfosRouter
  *
  */
 class Router extends RouterView
@@ -39,7 +39,7 @@ class Router extends RouterView
 	 *
 	 * @var    CategoryFactoryInterface
 	 *
-	 * @since  1.2.0
+	 * @since  1.0.0
 	 */
 	private $categoryFactory;
 
@@ -48,7 +48,7 @@ class Router extends RouterView
 	 *
 	 * @var    array
 	 *
-	 * @since  1.2.0
+	 * @since  1.0.0
 	 */
 	private $categoryCache = [];
 
@@ -59,6 +59,14 @@ class Router extends RouterView
 		$this->categoryFactory = $categoryFactory;
 		
 		
+			$halleninfos = new RouterViewConfiguration('halleninfos');
+			$this->registerView($halleninfos);
+			$ccHalleninfo = new RouterViewConfiguration('halleninfo');
+			$ccHalleninfo->setKey('id')->setParent($halleninfos);
+			$this->registerView($ccHalleninfo);
+			$halleninfoform = new RouterViewConfiguration('halleninfoform');
+			$halleninfoform->setKey('id');
+			$this->registerView($halleninfoform);
 
 		parent::__construct($app, $menu);
 
@@ -69,8 +77,56 @@ class Router extends RouterView
 
 
 	
+		/**
+		 * Method to get the segment(s) for an halleninfo
+		 *
+		 * @param   string  $id     ID of the halleninfo to retrieve the segments for
+		 * @param   array   $query  The request that is built right now
+		 *
+		 * @return  array|string  The segments of this item
+		 */
+		public function getHalleninfoSegment($id, $query)
+		{
+			return array((int) $id => $id);
+		}
+			/**
+			 * Method to get the segment(s) for an halleninfoform
+			 *
+			 * @param   string  $id     ID of the halleninfoform to retrieve the segments for
+			 * @param   array   $query  The request that is built right now
+			 *
+			 * @return  array|string  The segments of this item
+			 */
+			public function getHalleninfoformSegment($id, $query)
+			{
+				return $this->getHalleninfoSegment($id, $query);
+			}
 
 	
+		/**
+		 * Method to get the segment(s) for an halleninfo
+		 *
+		 * @param   string  $segment  Segment of the halleninfo to retrieve the ID for
+		 * @param   array   $query    The request that is parsed right now
+		 *
+		 * @return  mixed   The id of this item or false
+		 */
+		public function getHalleninfoId($segment, $query)
+		{
+			return (int) $segment;
+		}
+			/**
+			 * Method to get the segment(s) for an halleninfoform
+			 *
+			 * @param   string  $segment  Segment of the halleninfoform to retrieve the ID for
+			 * @param   array   $query    The request that is parsed right now
+			 *
+			 * @return  mixed   The id of this item or false
+			 */
+			public function getHalleninfoformId($segment, $query)
+			{
+				return $this->getHalleninfoId($segment, $query);
+			}
 
 	/**
 	 * Method to get categories from cache
@@ -79,7 +135,7 @@ class Router extends RouterView
 	 *
 	 * @return  CategoryInterface  The object containing categories
 	 *
-	 * @since   1.2.0
+	 * @since   1.0.0
 	 */
 	private function getCategories(array $options = []): CategoryInterface
 	{

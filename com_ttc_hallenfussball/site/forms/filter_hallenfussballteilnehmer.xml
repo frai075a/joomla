@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fields name="filter">
+        <field name="search" type="text" hint="COM_TTC_HALLENFUSSBALL_SEARCH_FILTER_SUBMIT"
+               label="COM_USERS_FILTER_SEARCH_DESC"
+               class="js-stools-search-string" />
+
+        
+
+    </fields>
+    <fields name="list">
+
+        <field name="fullordering"
+               type="list"
+               label="COM_TTC_HALLENFUSSBALL_LIST_FULL_ORDERING"
+               description="COM_TTC_HALLENFUSSBALL_LIST_FULL_ORDERING_DESC"
+               onchange="this.form.submit();"
+               default="a.id DESC"
+        >
+            <option value="">JGLOBAL_SORT_BY</option>
+            <option value="a.id ASC">COM_TTC_HALLENFUSSBALL_ID_ASC</option><option value="a.id DESC">COM_TTC_HALLENFUSSBALL_ID_DESC</option><option value="a.created_by ASC">COM_TTC_HALLENFUSSBALL_CREATED_BY_ASC</option><option value="a.created_by DESC">COM_TTC_HALLENFUSSBALL_CREATED_BY_DESC</option><option value="a.datum ASC">COM_TTC_HALLENFUSSBALL_DATUM_ASC</option><option value="a.datum DESC">COM_TTC_HALLENFUSSBALL_DATUM_DESC</option><option value="a.teilnehmer ASC">COM_TTC_HALLENFUSSBALL_TEILNEHMER_ASC</option><option value="a.teilnehmer DESC">COM_TTC_HALLENFUSSBALL_TEILNEHMER_DESC</option><option value="a.zusage ASC">COM_TTC_HALLENFUSSBALL_ZUSAGE_ASC</option><option value="a.zusage DESC">COM_TTC_HALLENFUSSBALL_ZUSAGE_DESC</option>
+
+        </field>
+
+       <field name="limit"
+               type="limitbox"
+               label="COM_TTC_HALLENFUSSBALL_LIST_LIMIT"
+               description="COM_TTC_HALLENFUSSBALL_LIST_LIMIT_DESC"
+               class="input-mini"
+               default="25"
+               onchange="this.form.submit();"
+        />
+
+    </fields>
+</form>

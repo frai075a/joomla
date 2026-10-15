@@ -1,7 +1,7 @@
 <?php
 /**
- * @version    CVS: 1.2.0
- * @package    Com_Hallenschliesszeiten
+ * @version    CVS: 1.0.0
+ * @package    Com_Halleninfos
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
@@ -19,7 +19,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 /**
  * Display Component Controller
  *
- * @since  1.2.0
+ * @since  1.0.0
  */
 class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 {
@@ -33,7 +33,7 @@ class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 	 * @param  CMSApplication       $app      The JApplication for the dispatcher
 	 * @param  Input              $input    Input
 	 *
-	 * @since  1.2.0
+	 * @since  1.0.0
 	 */
 	public function __construct($config = array(), MVCFactoryInterface $factory = null, $app = null, $input = null)
 	{
@@ -48,13 +48,13 @@ class DisplayController extends \Joomla\CMS\MVC\Controller\BaseController
 	 *
 	 * @return  \Joomla\CMS\MVC\Controller\BaseController  This object to support chaining.
 	 *
-	 * @since   1.2.0
+	 * @since   1.0.0
 	 */
 	public function display($cachable = false, $urlparams = false)
 	{
 
-		$view = $this->input->getCmd('view', 'schliesszeiten');
-		$view = $view == "featured" ? 'schliesszeiten' : $view;
+		$view = $this->input->getCmd('view', 'halleninfos');
+		$view = $view == "featured" ? 'halleninfos' : $view;
 		$this->input->set('view', $view);
 		
 

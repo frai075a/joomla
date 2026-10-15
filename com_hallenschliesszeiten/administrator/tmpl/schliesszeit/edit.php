@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -17,9 +17,9 @@ use \Joomla\CMS\Router\Route;
 use \Joomla\CMS\Language\Text;
 
 $wa = $this->document->getWebAssetManager();
-$wa->useScript('keepalive')
+$wa->useScript('form.validate')
 	->useScript('form.validate');
-HTMLHelper::_('bootstrap.tooltip');
+
 ?>
 
 <form

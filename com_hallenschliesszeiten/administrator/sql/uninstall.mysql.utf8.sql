@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS `#__ttc_hallenschliesszeiten`;
+-- Tabellen und Daten bleiben bei einer Deinstallation erhalten.

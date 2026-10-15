@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<extension type="plugin" group="content" version="4.0" method = "upgrade"> 
+  <name>TTC Script Content Viewer</name> 
+  <author>Thorsten Austen</author> 
+  <creationDate>June 2013</creationDate> 
+  <copyright>(C) 2013 Thorsten Austen</copyright> 
+  <license>http://www.gnu.org/copyleft/gpl.html</license> 
+  <version>4.2</version> 
+  <description>Zeigt den hinterlegten Code aus der Tabelle ttc_script_content an, wenn der Suchparameter uebereinstimmt. Die Tabelle wird mit der Komponenten ttc_script_content_viewer gepflegt. Miit Version 4.0 wird vor dem Anzeigen noch die Zustimmung des Users eingefordert</description> 
+  <files> 
+    <filename plugin="ttc_script_content_viewer">ttc_script_content_viewer.php</filename>
+  </files>
+</extension>

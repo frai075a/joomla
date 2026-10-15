@@ -13,7 +13,7 @@ foreach ($daten as $row) {
     if ($datum_alt != $datum_umw) {
 // nur 1 Ereignis pro Termin rausschreiben, weiteres wird überlesen		
 		
-		if ($row['heimmannschaft'] == 'TTC Nordend Frankfurt') {
+		if ($row['heimmannschaft'] == 'TTC Nordend') {
 			$grund = " TT - Heimspiel";
 		}
 		else {

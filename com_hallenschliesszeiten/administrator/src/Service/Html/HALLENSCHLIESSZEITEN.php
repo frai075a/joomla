@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -14,13 +14,13 @@ defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\DatabaseAwareTrait;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 
 /**
  * Hallenschliesszeiten HTML Helper.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class HALLENSCHLIESSZEITEN
 {
@@ -33,7 +33,7 @@ class HALLENSCHLIESSZEITEN
 	 */
 	public function __construct(DatabaseDriver $db)
 	{
-		$this->setDbo($db);
+		$this->setDatabase($db);
 	}
 
 	public function toggle($value = 0, $view='', $field='', $i='')

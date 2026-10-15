@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -23,7 +23,7 @@ use Joomla\Utilities\ArrayHelper;
 /**
  * Schliesszeiten list controller class.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class SchliesszeitenController extends AdminController
 {
@@ -71,7 +71,7 @@ class SchliesszeitenController extends AdminController
 	 *
 	 * @return  object	The Model
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public function getModel($name = 'Schliesszeit', $prefix = 'Administrator', $config = array())
 	{
@@ -85,12 +85,13 @@ class SchliesszeitenController extends AdminController
 	 *
 	 * @return  void
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 *
 	 * @throws  Exception
 	 */
 	public function saveOrderAjax()
 	{
+        $this->checkToken();
 		// Get the input
 		$pks   = $this->input->post->get('cid', array(), 'array');
 		$order = $this->input->post->get('order', array(), 'array');

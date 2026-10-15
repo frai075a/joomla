@@ -14,8 +14,8 @@ defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Model\DatabaseAwareTrait;
-use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Database\DatabaseAwareTrait;
 
 /**
  * Halleninfos HTML Helper.
@@ -31,11 +31,10 @@ class HALLENINFOS
 	 *
 	 * @param   DatabaseDriver  $db  The Joomla DB driver object for the site's database.
 	 */
-	public function __construct(DatabaseDriver $db)
+	public function __construct(DatabaseInterface $database)
 	{
-		$this->setDbo($db);
-	}
-
+        $this->setDatabase($database);
+    }
 	public function toggle($value = 0, $view='', $field='', $i='')
 	{
 		$states = array(

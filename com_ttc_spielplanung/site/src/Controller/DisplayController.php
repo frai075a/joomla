@@ -46,7 +46,12 @@ class DisplayController extends BaseController
         $result = $model->saveAndNotify($statuses);
 
         if ($result !== false) {
-            $app->enqueueMessage(Text::_('COM_TTC_SPIELPLANUNG_SAVE_SUCCESS'));
+            $message = Text::_('COM_TTC_SPIELPLANUNG_SAVE_SUCCESS');
+            if (!empty($result['notified_captains'])) {
+                $names = htmlspecialchars(implode(', ', $result['notified_captains']), ENT_QUOTES, 'UTF-8');
+                $message .= '. ' . Text::sprintf('COM_TTC_SPIELPLANUNG_MAIL_NOTIFIED_CAPTAINS', $names);
+            }
+            $app->enqueueMessage($message);
 
             foreach ($result['warnings'] as $warning) {
                 $app->enqueueMessage($warning, 'warning');

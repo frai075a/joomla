@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -20,33 +20,33 @@ use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\CMS\Filter\OutputFilter;
 use \Joomla\CMS\Event\Model;
 use Joomla\CMS\Event\AbstractEvent;
-
+use \Joomla\Database\DatabaseInterface;
 
 /**
  * Schliesszeit model.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class SchliesszeitModel extends AdminModel
 {
 	/**
 	 * @var    string  The prefix to use with controller messages.
 	 *
-	 * @since  1.2.0
+	 * @since  1.3.0
 	 */
 	protected $text_prefix = 'COM_HALLENSCHLIESSZEITEN';
 
 	/**
 	 * @var    string  Alias to manage history control
 	 *
-	 * @since  1.2.0
+	 * @since  1.3.0
 	 */
 	public $typeAlias = 'com_hallenschliesszeiten.schliesszeit';
 
 	/**
 	 * @var    null  Item data
 	 *
-	 * @since  1.2.0
+	 * @since  1.3.0
 	 */
 	protected $item = null;
 
@@ -62,7 +62,7 @@ class SchliesszeitModel extends AdminModel
 	 *
 	 * @return  Table    A database object
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public function getTable($type = 'Schliesszeit', $prefix = 'Administrator', $config = array())
 	{
@@ -77,7 +77,7 @@ class SchliesszeitModel extends AdminModel
 	 *
 	 * @return  \JForm|boolean  A \JForm object on success, false on failure
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public function getForm($data = array(), $loadData = true)
 	{
@@ -111,7 +111,7 @@ class SchliesszeitModel extends AdminModel
 	 *
 	 * @return  mixed  The data for the form.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function loadFormData()
 	{
@@ -139,7 +139,7 @@ class SchliesszeitModel extends AdminModel
 	 *
 	 * @return  mixed    Object on success, false on failure.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public function getItem($pk = null)
 	{
@@ -167,87 +167,27 @@ class SchliesszeitModel extends AdminModel
 	 *
 	 * @throws  Exception
 	 */
-	public function duplicate(&$pks)
-	{
-		$app = Factory::getApplication();
-		$user = $app->getIdentity();
-        $dispatcher = $this->getDispatcher();
 
-		// Access checks.
-		if (!$user->authorise('core.create', 'com_hallenschliesszeiten'))
-		{
-			throw new \Exception(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'));
-		}
-
-		$context    = $this->option . '.' . $this->name;
-
-		// Include the plugins for the save events.
-		PluginHelper::importPlugin($this->events_map['save']);
-
-		$table = $this->getTable();
-
-		foreach ($pks as $pk)
-		{
-			
-				if ($table->load($pk, true))
-				{
-					// Reset the id to create a new record.
-					$table->id = 0;
-
-					if (!$table->check())
-					{
-						throw new \Exception($table->getError());
-					}
-					
-
-					// Create the before save event.
-					$beforeSaveEvent = AbstractEvent::create(
-						$this->event_before_save,
-						[
-							'context' => $context,
-							'subject' => $table,
-							'isNew'   => true,
-							'data'    => $table,
-						]
-					);
-
-					// Trigger the before save event.
-					$dispatchResult = Factory::getApplication()->getDispatcher()->dispatch($this->event_before_save, $beforeSaveEvent);
-
-					// Check if dispatch result is an array and handle accordingly
-					$result = isset($dispatchResult['result']) ? $dispatchResult['result'] : [];
-
-					// Proceed with your logic
-					if (in_array(false, $result, true) || !$table->store()) {
-						throw new \Exception($table->getError());
-					}
-
-					// Trigger the after save event.
-					Factory::getApplication()->getDispatcher()->dispatch(
-						$this->event_after_save,
-						AbstractEvent::create(
-							$this->event_after_save,
-							[
-								'context'    => $context,
-								'subject'    => $table,
-								'isNew'      => true,
-								'data'       => $table,
-							]
-						)
-					);			
-				}
-				else
-				{
-					throw new \Exception($table->getError());
-				}
-			
-		}
-
-		// Clean cache
-		$this->cleanCache();
-
-		return true;
-	}
+    public function duplicate(&$pks)
+    {
+        if (!Factory::getApplication()->getIdentity()->authorise('core.create', 'com_hallenschliesszeiten')) {
+            throw new \RuntimeException(Text::_('JERROR_CORE_CREATE_NOT_PERMITTED'), 403);
+        }
+        foreach ($pks as $pk) {
+            $item = $this->getItem((int) $pk);
+            if (!$item) {
+                throw new \RuntimeException('Datensatz nicht gefunden.');
+            }
+            $data = (array) $item;
+            $data['id'] = 0;
+            $data['checked_out'] = null;
+            $data['checked_out_time'] = null;
+            if (!$this->save($data)) {
+                throw new \RuntimeException($this->getError());
+            }
+        }
+        return true;
+    }
 
 	/**
 	 * Prepare and sanitise the table prior to saving.
@@ -256,18 +196,17 @@ class SchliesszeitModel extends AdminModel
 	 *
 	 * @return  void
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function prepareTable($table)
 	{
-		jimport('joomla.filter.output');
 
 		if (empty($table->id))
 		{
 			// Set ordering to the last item if not set
 			if (@$table->ordering === '')
 			{
-				$db = $this->getDbo();
+				$db = Factory::getContainer()->get(DatabaseInterface::class);
 				$db->setQuery('SELECT MAX(ordering) FROM #__ttc_hallenschliesszeiten');
 				$max             = $db->loadResult();
 				$table->ordering = $max + 1;

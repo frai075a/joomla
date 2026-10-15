@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Ttchallenfussball\Component\Ttc_hallenfussball\Site\Field">
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="created_when" type="timecreated" label="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_CREATED_WHEN" description="COM_TTC_HALLENFUSSBALL_FORM_DESC_HALLENFUSSBALLTEILNAHME_CREATED_WHEN" hint="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_CREATED_WHEN"/>
+    <field name="datum" default="NOW" type="calendar" readonly="true" class="readonly" label="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_DATUM" description="COM_TTC_HALLENFUSSBALL_FORM_DESC_HALLENFUSSBALLTEILNAHME_DATUM" hint="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_DATUM"/>
+    <field name="teilnehmer" required="true" label="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_TEILNEHMER" description="COM_TTC_HALLENFUSSBALL_FORM_DESC_HALLENFUSSBALLTEILNAHME_TEILNEHMER" hint="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_TEILNEHMER"/>
+    <field name="zusage" type="radio" required="true" label="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_ZUSAGE" description="COM_TTC_HALLENFUSSBALL_FORM_DESC_HALLENFUSSBALLTEILNAHME_ZUSAGE" hint="COM_TTC_HALLENFUSSBALL_FORM_LBL_HALLENFUSSBALLTEILNAHME_ZUSAGE">
+      <option value="ja">COM_TTC_HALLENFUSSBALL_HALLENFUSSBALLTEILNEHMER_ZUSAGE_OPTION_JA</option>
+      <option value="nein">COM_TTC_HALLENFUSSBALL_HALLENFUSSBALLTEILNEHMER_ZUSAGE_OPTION_NEIN</option>
+    </field>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>

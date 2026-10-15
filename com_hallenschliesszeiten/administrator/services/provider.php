@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -27,7 +27,7 @@ use Joomla\DI\ServiceProviderInterface;
 /**
  * The Hallenschliesszeiten service provider.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 return new class implements ServiceProviderInterface
 {
@@ -38,7 +38,7 @@ return new class implements ServiceProviderInterface
 	 *
 	 * @return  void
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public function register(Container $container)
 	{
@@ -56,7 +56,6 @@ return new class implements ServiceProviderInterface
 
 				$component->setRegistry($container->get(Registry::class));
 				$component->setMVCFactory($container->get(MVCFactoryInterface::class));
-				$component->setCategoryFactory($container->get(CategoryFactoryInterface::class));
 				$component->setRouterFactory($container->get(RouterFactoryInterface::class));
 
 				return $component;

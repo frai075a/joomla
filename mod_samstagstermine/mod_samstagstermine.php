@@ -8,5 +8,6 @@
 defined('_JEXEC') or die;
 require_once dirname(__FILE__) . '/helper.php';
 use Joomla\CMS\Helper\ModuleHelper;
-$daten = modSamstagstermineHelper::getSamstagstermine($params, $num_rows);
-require(JModuleHelper::getLayoutPath('mod_samstagstermine', $params->get('layout', 'default')));
+use Joomla\CMS\Factory;
+$daten = modSamstagstermineHelper::getSamstagstermine($params);
+require ModuleHelper::getLayoutPath('mod_samstagstermine', $params->get('layout', 'default'));

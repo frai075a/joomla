@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -13,12 +13,12 @@ defined('_JEXEC') or die;
 
 use \Joomla\CMS\Factory;
 use \Joomla\CMS\Language\Text;
-use \Joomla\CMS\Object\CMSObject;
+use Joomla\Registry\Registry;
 
 /**
  * Hallenschliesszeiten helper.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class HallenschliesszeitenHelper
 {
@@ -35,8 +35,8 @@ class HallenschliesszeitenHelper
 	 */
 	public static function getFiles($pk, $table, $field)
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+		$query = $db->createQuery();
 
 		$query
 			->select($field)
@@ -51,14 +51,14 @@ class HallenschliesszeitenHelper
 	/**
 	 * Gets a list of the actions that can be performed.
 	 *
-	 * @return  CMSObject
+	 * @return  Registry
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	public static function getActions()
 	{
 		$user = Factory::getApplication()->getIdentity();
-		$result = new CMSObject;
+		$result = new Registry;
 
 		$assetName = 'com_hallenschliesszeiten';
 

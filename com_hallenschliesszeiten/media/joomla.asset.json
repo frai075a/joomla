@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "com_hallenschliesszeiten",
-  "version": "CVS: 1.2.0",
+  "version": "2.0.0",
   "license": "GNU General Public License version 2 or later; see LICENSE.txt",
   "assets": [
     {
@@ -21,9 +21,9 @@
       }
     },
     {
-        "name": "com_hallenschliesszeiten.list",
-        "type": "style",
-        "uri": "com_hallenschliesszeiten/list.css"
+      "name": "com_hallenschliesszeiten.list",
+      "type": "style",
+      "uri": "com_hallenschliesszeiten/list.css"
     }
   ]
 }

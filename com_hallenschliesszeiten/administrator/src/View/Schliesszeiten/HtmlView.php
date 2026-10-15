@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -22,11 +22,14 @@ use \Joomla\CMS\HTML\Helpers\Sidebar;
 /**
  * View class for a list of Schliesszeiten.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class HtmlView extends BaseHtmlView
 {
-	protected $items;
+	public $filterForm;
+    public $activeFilters;
+    public $sidebar;
+    protected $items;
 
 	protected $pagination;
 
@@ -43,19 +46,21 @@ class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null)
 	{
-		$this->state = $this->get('State');
-		$this->items = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->filterForm = $this->get('FilterForm');
-		$this->activeFilters = $this->get('ActiveFilters');
+		$this->state = $this->getModel()->getState();
+		$this->items = $this->getModel()->getItems();
+		$this->pagination = $this->getModel()->getPagination();
+		$this->filterForm = $this->getModel()->getFilterForm();
+		$this->activeFilters = $this->getModel()->getActiveFilters();
 
 		// Check for errors.
-		if (count($errors = $this->get('Errors')))
+		if (count($errors = $this->getModel()->getErrors()))
 		{
 			throw new \Exception(implode("\n", $errors));
 		}
 
-		$this->addToolbar();
+		Sidebar::addEntry(Text::_('COM_HALLENSCHLIESSZEITEN_TITLE_SCHLIESSZEITEN'), 'index.php?option=com_hallenschliesszeiten&view=schliesszeiten', 'Schliesszeiten' === 'Schliesszeiten');
+        Sidebar::addEntry(Text::_('COM_HALLENINFOS_TITLE_HALLENINFOS'), 'index.php?option=com_hallenschliesszeiten&view=halleninfos', 'Schliesszeiten' === 'Halleninfos');
+        $this->addToolbar();
 
 		$this->sidebar = Sidebar::render();
 		parent::display($tpl);
@@ -66,11 +71,11 @@ class HtmlView extends BaseHtmlView
 	 *
 	 * @return  void
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function addToolbar()
 	{
-		$state = $this->get('State');
+		$state = $this->getModel()->getState();
 		$canDo = HallenschliesszeitenHelper::getActions();
 
 		ToolbarHelper::title(Text::_('COM_HALLENSCHLIESSZEITEN_TITLE_SCHLIESSZEITEN'), "generic");

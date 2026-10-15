@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -17,7 +17,7 @@ use \Joomla\CMS\MVC\Model\BaseDatabaseModel;
 /**
  * Class HallenschliesszeitenFrontendHelper
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class HallenschliesszeitenHelper
 {
@@ -36,8 +36,8 @@ class HallenschliesszeitenHelper
 	 */
 	public static function getFiles($pk, $table, $field)
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$db = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+		$query = $db->createQuery();
 
 		$query
 			->select($field)

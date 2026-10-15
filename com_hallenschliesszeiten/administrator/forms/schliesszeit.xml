@@ -13,9 +13,8 @@
     <field name="checked_out_time" type="hidden" filter="unset"/>
     <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_CREATED_BY"/>
     <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_MODIFIED_BY"/>
-    <field name="beginn" type="calendar" class="inputbox" filter="safehtml" required="true" label="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_BEGINN" description="COM_HALLENSCHLIESSZEITEN_FORM_DESC_SCHLIESSZEIT_BEGINN" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_BEGINN"/>
-    <field name="ende" type="calendar" class="inputbox" filter="safehtml" required="true" label="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_ENDE" description="COM_HALLENSCHLIESSZEITEN_FORM_DESC_SCHLIESSZEIT_ENDE" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_ENDE"/>
-    <field name="schliessinfo" label="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_SCHLIESSINFO" description="COM_HALLENSCHLIESSZEITEN_FORM_DESC_SCHLIESSZEIT_SCHLIESSINFO" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_SCHLIESSINFO"/>
-    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+    <field name="beginn" type="calendar" format="%Y-%m-%d" showtime="false" class="inputbox" filter="string" required="true" label="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_BEGINN" description="COM_HALLENSCHLIESSZEITEN_FORM_DESC_SCHLIESSZEIT_BEGINN" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_BEGINN"/>
+    <field name="ende" type="calendar" format="%Y-%m-%d" showtime="false" class="inputbox" filter="string" required="true" label="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_ENDE" description="COM_HALLENSCHLIESSZEITEN_FORM_DESC_SCHLIESSZEIT_ENDE" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_ENDE"/>
+    <field name="schliessinfo" type="textarea" filter="string" maxlength="75" label="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_SCHLIESSINFO" description="COM_HALLENSCHLIESSZEITEN_FORM_DESC_SCHLIESSZEIT_SCHLIESSINFO" hint="COM_HALLENSCHLIESSZEITEN_FORM_LBL_SCHLIESSZEIT_SCHLIESSINFO"/>
   </fieldset>
 </form>

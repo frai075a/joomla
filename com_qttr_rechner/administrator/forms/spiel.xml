@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Qttr\Component\Qttr_rechner\Administrator\Field">
+  <fieldset>
+    <field name="id" type="text" readonly="true" class="readonly" default="0" description="JGLOBAL_FIELD_ID_DESC"/>
+    <field name="state" default="1" type="list" label="JSTATUS" description="JFIELD_PUBLISHED_DESC" class="inputbox" size="1">
+      <option value="1">JPUBLISHED</option>
+      <option value="0">JUNPUBLISHED</option>
+      <option value="2">JARCHIVED</option>
+      <option value="-2">JTRASHED</option>
+    </field>
+    <field name="ordering"/>
+    <field name="checked_out" type="hidden" filter="unset"/>
+    <field name="checked_out_time" type="hidden" filter="unset"/>
+    <field name="created_by" type="createdby" default="0" label="JGLOBAL_FIELD_CREATED_BY_LABEL" description="JGLOBAL_FIELD_CREATED_BY_DESC" hidden="true" hint="COM_QTTR_RECHNER_FORM_LBL_SPIEL_CREATED_BY"/>
+    <field name="modified_by" type="modifiedby" default="0" label="JGLOBAL_FIELD_MODIFIED_BY_LABEL" description="JGLOBAL_FIELD_MODIFIED_BY_DESC" hidden="true" hint="COM_QTTR_RECHNER_FORM_LBL_SPIEL_MODIFIED_BY"/>
+    <field name="qttr_wert" required="true" label="COM_QTTR_RECHNER_FORM_LBL_SPIEL_QTTR_WERT" description="COM_QTTR_RECHNER_FORM_DESC_SPIEL_QTTR_WERT" hint="COM_QTTR_RECHNER_FORM_LBL_SPIEL_QTTR_WERT"/>
+    <field name="sieg" default="ja" type="list" required="true" label="COM_QTTR_RECHNER_FORM_LBL_SPIEL_SIEG" description="COM_QTTR_RECHNER_FORM_DESC_SPIEL_SIEG" hint="COM_QTTR_RECHNER_FORM_LBL_SPIEL_SIEG">
+      <option value="ja">COM_QTTR_RECHNER_SPIELE_SIEG_OPTION_JA</option>
+      <option value="nein">COM_QTTR_RECHNER_SPIELE_SIEG_OPTION_NEIN</option>
+    </field>
+    <field name="letztesspiel" default="ja" type="list" required="true" label="COM_QTTR_RECHNER_FORM_LBL_SPIEL_LETZTESSPIEL" description="COM_QTTR_RECHNER_FORM_DESC_SPIEL_LETZTESSPIEL" hint="COM_QTTR_RECHNER_FORM_LBL_SPIEL_LETZTESSPIEL">
+      <option value="ja">COM_QTTR_RECHNER_SPIELE_LETZTESSPIEL_OPTION_JA</option>
+      <option value="nein">COM_QTTR_RECHNER_SPIELE_LETZTESSPIEL_OPTION_NEIN</option>
+    </field>
+    <field name="version_note" type="text" label="JGLOBAL_FIELD_VERSION_NOTE_LABEL" description="JGLOBAL_FIELD_VERSION_NOTE_DESC" class="inputbox" size="45" labelclass="control-label"/>
+  </fieldset>
+</form>

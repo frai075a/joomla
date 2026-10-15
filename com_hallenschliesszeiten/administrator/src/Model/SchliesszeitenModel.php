@@ -1,6 +1,6 @@
 <?php
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -19,11 +19,12 @@ use \Joomla\CMS\Helper\TagsHelper;
 use \Joomla\Database\ParameterType;
 use \Joomla\Utilities\ArrayHelper;
 use Ttc\Component\Hallenschliesszeiten\Administrator\Helper\HallenschliesszeitenHelper;
+use \Joomla\Database\DatabaseInterface;
 
 /**
  * Methods supporting a list of Schliesszeiten records.
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 class SchliesszeitenModel extends ListModel
 {
@@ -35,7 +36,7 @@ class SchliesszeitenModel extends ListModel
 	* @see        JController
 	* @since      1.6
 	*/
-	public function __construct($config = array())
+	public function __construct($config = array(), \Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
 	{
 		if (empty($config['filter_fields']))
 		{
@@ -51,7 +52,7 @@ class SchliesszeitenModel extends ListModel
 			);
 		}
 
-		parent::__construct($config);
+		parent::__construct($config, $factory);
 	}
 
 
@@ -76,7 +77,7 @@ class SchliesszeitenModel extends ListModel
 	protected function populateState($ordering = null, $direction = null)
 	{
 		// List state information.
-		parent::populateState('beginn', 'ASC');
+		parent::populateState('a.beginn', 'ASC');
 
 		$context = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $context);
@@ -105,7 +106,7 @@ class SchliesszeitenModel extends ListModel
 	 *
 	 * @return  string A store id.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function getStoreId($id = '')
 	{
@@ -123,13 +124,13 @@ class SchliesszeitenModel extends ListModel
 	 *
 	 * @return  DatabaseQuery
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function getListQuery()
 	{
 		// Create a new query object.
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true);
+		$db    = Factory::getContainer()->get(DatabaseInterface::class);
+		$query = $db->createQuery();
 
 		// Select the required fields from the table.
 		$query->select(
@@ -142,14 +143,6 @@ class SchliesszeitenModel extends ListModel
 		// Join over the users for the checked out user
 		$query->select("uc.name AS uEditor");
 		$query->join("LEFT", "#__users AS uc ON uc.id=a.checked_out");
-
-		// Join over the user field 'created_by'
-		$query->select('`created_by`.name AS `created_by`');
-		$query->join('LEFT', '#__users AS `created_by` ON `created_by`.id = a.`created_by`');
-
-		// Join over the user field 'modified_by'
-		$query->select('`modified_by`.name AS `modified_by`');
-		$query->join('LEFT', '#__users AS `modified_by` ON `modified_by`.id = a.`modified_by`');
 		
 
 		// Filter by published state
@@ -176,12 +169,13 @@ class SchliesszeitenModel extends ListModel
 			else
 			{
 				$search = $db->Quote('%' . $db->escape($search, true) . '%');
+                $query->where('(a.beginn LIKE ' . $search . ' OR a.ende LIKE ' . $search . ' OR a.schliessinfo LIKE ' . $search . ')');
 				
 			}
 		}
 		
 		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering', 'beginn');
+		$orderCol  = $this->state->get('list.ordering', 'a.beginn');
 		$orderDirn = $this->state->get('list.direction', 'ASC');
 
 		if ($orderCol && $orderDirn)

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version    CVS: 1.2.0
+ * @version    CVS: 1.3.0
  * @package    Com_Hallenschliesszeiten
  * @author     Thorsten Austen <thorsten.austen@gmail.com>
  * @copyright  2024 Thorsten Austen
@@ -20,7 +20,7 @@ use \Joomla\CMS\Form\Field\ListField;
 /**
  * Supports a value from an external table
  *
- * @since  1.2.0
+ * @since  1.3.0
  */
 #[\AllowDynamicProperties]
  class ForeignKeyField extends ListField
@@ -29,7 +29,7 @@ use \Joomla\CMS\Form\Field\ListField;
 	 * The form field type.
 	 *
 	 * @var    string
-	 * @since  1.2.0
+	 * @since  1.3.0
 	 */
 	protected $type = 'foreignkey';
 
@@ -39,7 +39,7 @@ use \Joomla\CMS\Form\Field\ListField;
 	 * The translate.
 	 *
 	 * @var    boolean
-	 * @since  1.2.0
+	 * @since  1.3.0
 	 */
 	protected $translate = true;
 
@@ -64,7 +64,7 @@ use \Joomla\CMS\Form\Field\ListField;
 	 *
 	 * @return  string  The field input markup.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function processQuery()
 	{
@@ -117,8 +117,8 @@ use \Joomla\CMS\Form\Field\ListField;
 		$fk_value = '';
 
 		// Load all the field options
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$db    = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
+		$query = $db->createQuery();
 
 		// Support for multiple fields on fk_values
 		if ($this->value_multiple == 1)
@@ -192,7 +192,7 @@ use \Joomla\CMS\Form\Field\ListField;
 	 *
 	 * @return  string  The field input.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function getInput()
 	{
@@ -230,12 +230,12 @@ use \Joomla\CMS\Form\Field\ListField;
 	 *
 	 * @return  array  The field option objects.
 	 *
-	 * @since   1.2.0
+	 * @since   1.3.0
 	 */
 	protected function getOptions()
 	{
 		$options = array();
-		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get(\Joomla\Database\DatabaseInterface::class);
 		try
 		{
 			$db->setQuery($this->processQuery());
