@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Ttchallenbuchung\Component\Ttc_hallenbuchung\Site\Field"><fieldset>
+<field name="id" type="hidden" default="0" filter="integer"/>
+    <field name="datum" type="teilnahmedatum" format="%d.%m.%Y" translateformat="false" required="true" class="form-control" hint="TT.MM.JJJJ" label="COM_TTC_HALLENBUCHUNG_TT_DATE"/>
+    <field name="slot" type="list" required="true" validate="options" default="1" class="form-select" label="COM_TTC_HALLENBUCHUNG_TT_SLOT">
+      <option value="1">COM_TTC_HALLENBUCHUNG_TT_SLOT_1</option>
+      <option value="2">COM_TTC_HALLENBUCHUNG_TT_SLOT_2</option>
+    </field>
+    <field name="paarung" type="text" required="true" maxlength="100" filter="string" class="form-control" label="COM_TTC_HALLENBUCHUNG_TT_PAIR"/>
+    <field name="state" type="list" default="1" filter="integer" validate="options" label="JSTATUS">
+      <option value="1">JPUBLISHED</option><option value="0">JUNPUBLISHED</option>
+      <option value="2">JARCHIVED</option><option value="-2">JTRASHED</option>
+    </field>
+</fieldset></form>
