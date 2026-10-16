@@ -7,7 +7,7 @@
     <author>Thorsten Austen</author>
     <authorEmail>thorsten.austen@gmail.com</authorEmail>
     <authorUrl>http://</authorUrl>
-    <version>2.0.0</version>
+    <version>2.0.3</version>
     <description>COM_HALLENSCHLIESSZEITEN_XML_DESCRIPTION</description>
     <namespace path="src">Ttc\Component\Hallenschliesszeiten</namespace>
     

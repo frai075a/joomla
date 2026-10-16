@@ -37,7 +37,7 @@ class HalleninfosModel extends ListModel
 	 * @see    JController
 	 * @since  1.0.0
 	 */
-	public function __construct($config = array(), \Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
+	public function __construct($config = array(), ?\Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
 	{
 		if (empty($config['filter_fields']))
 		{

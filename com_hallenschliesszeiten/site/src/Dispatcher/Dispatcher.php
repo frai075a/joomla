@@ -9,7 +9,7 @@
 
 namespace Ttc\Component\Hallenschliesszeiten\Site\Dispatcher;
 
-defined('JPATH_PLATFORM') or die;
+defined('_JEXEC') or die;
 
 use Joomla\CMS\Dispatcher\ComponentDispatcher;
 use Joomla\CMS\Language\Text;

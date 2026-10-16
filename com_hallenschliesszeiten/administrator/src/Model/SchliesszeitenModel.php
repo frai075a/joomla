@@ -36,7 +36,7 @@ class SchliesszeitenModel extends ListModel
 	* @see        JController
 	* @since      1.6
 	*/
-	public function __construct($config = array(), \Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
+	public function __construct($config = array(), ?\Joomla\CMS\MVC\Factory\MVCFactoryInterface $factory = null)
 	{
 		if (empty($config['filter_fields']))
 		{
